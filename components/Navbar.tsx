@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const navRef = useRef(null);
   const router = useRouter();
+  const pathname = usePathname();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionRef = useRef<HTMLDivElement>(null);
+  const [isHomeScrolled, setIsHomeScrolled] = useState(false);
 
   useEffect(() => {
     gsap.fromTo(
@@ -18,6 +21,21 @@ export default function Navbar() {
       { y: 0, opacity: 1, duration: 1.5, ease: "power4.out", delay: 1 }
     );
   }, []);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setIsHomeScrolled(false);
+      return;
+    }
+
+    const onScroll = () => {
+      setIsHomeScrolled(window.scrollY > 24);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pathname]);
 
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,7 +103,14 @@ export default function Navbar() {
         <Link href="/" className="text-2xl font-serif font-bold tracking-tighter">
           IRH '25
         </Link>
-        <div className="hidden md:flex gap-8 font-sans text-sm uppercase tracking-widest">
+        <div
+          className={
+            "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
+            (isHomeScrolled
+              ? "px-6 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md"
+              : "px-0 py-0 bg-transparent border-transparent")
+          }
+        >
           {["Manifesto", "Tracks", "Timeline", "Sponsors"].map((item) => {
             const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
             return (
