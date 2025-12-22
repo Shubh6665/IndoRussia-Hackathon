@@ -42,9 +42,12 @@ export default function Navbar() {
           );
         })}
       </div>
-      <button className="border border-white/20 px-6 py-2 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300">
+      <Link
+        href="/register"
+        className="border border-white/20 px-6 py-2 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300"
+      >
         Register
-      </button>
+      </Link>
     </nav>
   );
 }

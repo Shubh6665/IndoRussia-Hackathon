@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
@@ -16,20 +16,12 @@ export default function CustomCursor() {
   const dotRef = useRef<HTMLDivElement | null>(null);
   const ringRef = useRef<HTMLDivElement | null>(null);
 
-  const setters = useMemo(() => {
-    return {
-      dotX: (value: number) => gsap.set(dotRef.current, { x: value }),
-      dotY: (value: number) => gsap.set(dotRef.current, { y: value }),
-      ringX: gsap.quickTo(ringRef.current, "x", {
-        duration: 0.25,
-        ease: "power3.out",
-      }),
-      ringY: gsap.quickTo(ringRef.current, "y", {
-        duration: 0.25,
-        ease: "power3.out",
-      }),
-    };
-  }, []);
+  const settersRef = useRef<{
+    dotX: (value: number) => void;
+    dotY: (value: number) => void;
+    ringX: (value: number) => void;
+    ringY: (value: number) => void;
+  } | null>(null);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -38,15 +30,31 @@ export default function CustomCursor() {
     setEnabled(ok);
     if (!ok) return;
 
+    // Refs exist only on the client; initialize GSAP setters lazily.
+    if (dotRef.current && ringRef.current) {
+      settersRef.current = {
+        dotX: (value: number) => gsap.set(dotRef.current, { x: value }),
+        dotY: (value: number) => gsap.set(dotRef.current, { y: value }),
+        ringX: gsap.quickTo(ringRef.current, "x", {
+          duration: 0.25,
+          ease: "power3.out",
+        }),
+        ringY: gsap.quickTo(ringRef.current, "y", {
+          duration: 0.25,
+          ease: "power3.out",
+        }),
+      };
+    }
+
     document.body.classList.add("has-custom-cursor");
 
     const onMove = (e: MouseEvent) => {
       const x = e.clientX;
       const y = e.clientY;
-      setters.dotX(x);
-      setters.dotY(y);
-      setters.ringX(x);
-      setters.ringY(y);
+      settersRef.current?.dotX(x);
+      settersRef.current?.dotY(y);
+      settersRef.current?.ringX(x);
+      settersRef.current?.ringY(y);
     };
 
     const onDown = () => {
@@ -68,8 +76,9 @@ export default function CustomCursor() {
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("mouseup", onUp);
       document.body.classList.remove("has-custom-cursor");
+      settersRef.current = null;
     };
-  }, [reducedMotion, setters]);
+  }, [reducedMotion]);
 
   if (!enabled) return null;
 
