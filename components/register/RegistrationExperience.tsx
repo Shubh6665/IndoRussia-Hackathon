@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import ScrollToPlugin from "gsap/ScrollToPlugin";
 import confetti from "canvas-confetti";
 import { CheckCircle2 } from "lucide-react";
 
@@ -277,7 +278,7 @@ function SerialPage({
   }, [active]);
 
   return (
-    <div className="pointer-events-none absolute -left-20 top-1/2 h-[74svh] w-44 -translate-y-1/2 overflow-hidden border border-black/10 bg-white text-black">
+    <div className="pointer-events-none absolute -left-20 top-1/2 z-0 h-[74svh] w-44 -translate-y-1/2 overflow-hidden border border-black/10 bg-white text-black">
       <div ref={trackRef} className="h-full w-full">
         {steps.map((s) => (
           <div key={s.id} className="flex h-[74svh] w-full flex-col justify-between p-5">
@@ -299,7 +300,7 @@ function SerialPage({
 
 function RightOrangeStrip() {
   return (
-    <div className="pointer-events-none absolute -right-16 top-1/2 h-[74svh] w-24 -translate-y-1/2 border border-white/10 bg-orange-600/70">
+    <div className="pointer-events-none absolute -right-16 top-1/2 z-0 h-[74svh] w-24 -translate-y-1/2 border border-white/10 bg-orange-600/70">
       <div className="absolute inset-y-0 right-3 flex flex-col items-center justify-between py-5">
         {Array.from({ length: 9 }).map((_, i) => (
           <div
@@ -397,10 +398,7 @@ export default function RegistrationExperience() {
   }, [form.participationMode, form.teamSize]);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     const triggers: ScrollTrigger[] = [];
 
@@ -408,7 +406,6 @@ export default function RegistrationExperience() {
       if (!el) return;
       const t = ScrollTrigger.create({
         trigger: el,
-        scroller,
         start: "top 55%",
         end: "bottom 55%",
         onEnter: () => setActiveStep(index),
@@ -421,29 +418,43 @@ export default function RegistrationExperience() {
       y: -20,
       ease: "none",
       scrollTrigger: {
-        trigger: scroller,
-        scroller,
+        trigger: document.body,
         start: "top top",
         end: "bottom bottom",
         scrub: true,
       },
     });
 
+    const layoutAnim = gsap.timeline({
+      scrollTrigger: {
+        trigger: document.body,
+        start: "top top",
+        end: "+=150",
+        scrub: 1,
+      },
+    });
+
+    layoutAnim
+      .to("#registration-container", { paddingTop: 0, duration: 1 }, 0)
+      .to("#registration-sidebar", { top: 0, height: "100vh", duration: 1 }, 0)
+      .to("nav", { yPercent: -100, duration: 1 }, 0);
+
+    ScrollTrigger.refresh();
+
     return () => {
       parallax.scrollTrigger?.kill();
       parallax.kill();
       triggers.forEach((t) => t.kill());
+      layoutAnim.kill();
     };
   }, []);
 
   const scrollToStep = (index: number) => {
-    const scroller = scrollerRef.current;
     const el = sectionsRef.current[index];
-    if (!scroller || !el) return;
+    if (!el) return;
 
-    const top = el.offsetTop;
-    gsap.to(scroller, {
-      scrollTop: top,
+    gsap.to(window, {
+      scrollTo: { y: el, offsetY: 50 },
       duration: 0.9,
       ease: "power3.inOut",
     });
@@ -484,12 +495,18 @@ export default function RegistrationExperience() {
   };
 
   return (
-    <div className="relative h-[100svh] w-full overflow-hidden bg-background text-foreground pt-24">
-      <div className="noise-bg" aria-hidden />
+    <div className="relative min-h-screen w-full bg-background text-foreground">
+      <div className="noise-bg fixed inset-0 pointer-events-none" aria-hidden />
 
-      <div className="absolute inset-0 flex">
+      <div
+        id="registration-container"
+        className="flex min-h-screen pt-32 transition-all duration-700 ease-out"
+      >
         {/* Left rail */}
-        <aside className="hidden h-full w-[18rem] shrink-0 border-r border-white/10 md:flex">
+        <aside
+          id="registration-sidebar"
+          className="hidden sticky top-32 h-[calc(100vh-8rem)] w-[18rem] shrink-0 border-r border-white/10 md:flex"
+        >
           <div className="flex h-full w-full flex-col justify-between p-8">
             <div className="space-y-7" data-register-parallax>
               <div className="space-y-2">
@@ -534,26 +551,22 @@ export default function RegistrationExperience() {
               </div>
             </div>
 
-            <div className="space-y-3" data-register-parallax>
-              <div className="h-[1px] w-full bg-white/10" />
-              <p className="font-sans text-xs text-white/55">
-                Fill carefully. Wrong details can disqualify.
-              </p>
-            </div>
+            
           </div>
         </aside>
 
         {/* Center stage */}
-        <div className="relative flex h-full flex-1 items-center justify-center">
-          <div className="relative mx-auto w-full max-w-6xl px-6">
-            <SerialPage steps={steps} active={activeStep} />
-            <RightOrangeStrip />
+        <div className="relative flex flex-1 justify-center">
+          <div className="relative mx-auto w-full max-w-6xl px-6 pb-32">
+            <div className="absolute inset-0 pointer-events-none z-0">
+              <div className="sticky top-0 h-screen w-full">
+                <SerialPage steps={steps} active={activeStep} />
+                <RightOrangeStrip />
+              </div>
+            </div>
 
-            <div className="relative mx-auto h-[calc(100svh-8rem)] w-full max-w-4xl border border-white/10 bg-white/8">
-              <div
-                ref={scrollerRef}
-                className="h-full w-full overflow-y-auto px-8 py-10 no-scrollbar"
-              >
+            <div className="relative z-10 mx-auto w-full max-w-4xl border border-white/10 bg-white/8">
+              <div ref={scrollerRef} className="w-full px-8 py-10">
                 {/* Step 0 */}
                 <section
                   ref={(el) => {
