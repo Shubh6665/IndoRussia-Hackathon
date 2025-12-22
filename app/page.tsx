@@ -35,7 +35,7 @@ export default function Home() {
                 </div>
                 <a
                   className="text-xs uppercase tracking-[0.22em] text-white/70 hover:text-white transition flex items-center gap-2"
-                  href="https://maps.google.com"
+                  href="https://www.google.com/maps/place/Rajiv+Gandhi+Institute+of+Petroleum+Technology+(RGIPT)/@26.2649092,81.5071294,893m/data=!3m1!1e3!4m10!1m2!2m1!1srgipt!3m6!1s0x399ba1580bf13c33:0x32df0c8e914ab52e!8m2!3d26.2655958!4d81.5093391!15sCgVyZ2lwdJIBF2VkdWNhdGlvbmFsX2luc3RpdHV0aW9u4AEA!16s%2Fm%2F03d7rbq?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -52,7 +52,7 @@ export default function Home() {
                   className="absolute inset-0 h-full w-full"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.2127798272896!2d77.20902931508053!3d28.613939382422902!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd371d9e0f23%3A0x3eb5e8efae07ab68!2sNew%20Delhi%2C%20Delhi%2C%20India!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.2127798272896!2d81.5071294!3d26.2649092!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399ba1580bf13c33:0x32df0c8e914ab52e!2sRajiv+Gandhi+Institute+of+Petroleum+Technology+(RGIPT)!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
                 />
               </div>
             </div>
@@ -65,11 +65,10 @@ export default function Home() {
               <div className="relative z-10">
                 <p className="text-xs uppercase tracking-[0.22em] text-white/50">Address</p>
                 <h3 className="mt-3 text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
-                  Innovation Hub
+                  Rajiv Gandhi Institute of Petroleum Technology
                 </h3>
                 <div className="mt-5 text-white/70 leading-7 space-y-1">
-                  <p>Technology Park, Sector 15</p>
-                  <p>New Delhi, Delhi 110001</p>
+                  <p>Amethi, Uttar Pradesh 229416</p>
                   <p>India</p>
                 </div>
 
@@ -87,7 +86,7 @@ export default function Home() {
                 <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <a
                     className="flex-1 px-6 py-3 border border-white/20 rounded-full text-white text-center text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                    href="https://maps.google.com"
+                    href="https://www.google.com/maps/place/Rajiv+Gandhi+Institute+of+Petroleum+Technology+(RGIPT)/@26.2649092,81.5071294,893m/data=!3m1!1e3!4m10!1m2!2m1!1srgipt!3m6!1s0x399ba1580bf13c33:0x32df0c8e914ab52e!8m2!3d26.2655958!4d81.5093391!15sCgVyZ2lwdJIBF2VkdWNhdGlvbmFsX2luc3RpdHV0aW9u4AEA!16s%2Fm%2F03d7rbq?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D"
                     target="_blank"
                     rel="noreferrer"
                   >

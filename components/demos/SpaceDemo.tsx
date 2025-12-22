@@ -6,17 +6,35 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 // Particle system for background stars
 function StarField({ count = 80 }: { count?: number }) {
-  const stars = useMemo(
-    () =>
-      Array.from({ length: count }, (_, i) => ({
+  const stars = useMemo(() => {
+    // Use a seeded random function for consistent SSR
+    const seed = 12345; // Fixed seed for consistency
+    let currentSeed = seed;
+    
+    const seededRandom = () => {
+      currentSeed = (currentSeed * 9301 + 49297) % 233280;
+      return currentSeed / 233280;
+    };
+    
+    return Array.from({ length: count }, (_, i) => {
+      // Use index + seed for deterministic but varied results
+      const seedIndex = i + seed;
+      const x = ((seedIndex * 9301 + 49297) % 233280) / 233280 * 100;
+      const y = ((seedIndex * 49297 + 9301) % 233280) / 233280 * 100;
+      const size = ((seedIndex * 233280 + 9301) % 2000) / 1000 + 1; // 1-3px
+      const delay = ((seedIndex * 12345 + 67890) % 3000) / 1000; // 0-3s
+      const opacity = ((seedIndex * 54321 + 98765) % 400) / 1000 + 0.3; // 0.3-0.7
+      
+      return {
         id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 2 + 1,
-        delay: Math.random() * 3,
-      })),
-    [count]
-  );
+        x,
+        y,
+        size,
+        delay,
+        opacity,
+      };
+    });
+  }, [count]);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -30,7 +48,7 @@ function StarField({ count = 80 }: { count?: number }) {
             width: star.size,
             height: star.size,
             animationDelay: `${star.delay}s`,
-            opacity: 0.3 + Math.random() * 0.4,
+            opacity: star.opacity,
           }}
         />
       ))}
