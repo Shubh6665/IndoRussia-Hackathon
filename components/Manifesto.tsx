@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Manifesto() {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Manifesto() {
     text.innerHTML = words
       .map(
         (word) =>
-          `<span class="word opacity-20 transition-opacity duration-300 inline-block mr-2">${word}</span>`
+          `<span class="word opacity-20 transition-opacity duration-300 inline-block mr-2 relative z-10">${word}</span>`
       )
       .join("");
 
@@ -36,14 +36,37 @@ export default function Manifesto() {
       stagger: 0.1,
       color: "#ffffff",
     });
+
+    // Mouse hover effect
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      containerRef.current.style.setProperty("--x", `${x}px`);
+      containerRef.current.style.setProperty("--y", `${y}px`);
+    };
+
+    containerRef.current?.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      containerRef.current?.removeEventListener("mousemove", handleMouseMove);
+    };
   }, []);
 
   return (
     <section
       ref={containerRef}
-      className="min-h-screen w-full bg-[#0a0a0a] flex items-center justify-center px-6 md:px-24 py-24"
+      className="group relative min-h-screen w-full bg-[#0a0a0a] flex items-center justify-center px-6 md:px-24 py-24 overflow-hidden"
     >
-      <div className="max-w-6xl">
+      {/* Spotlight effect */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)`
+        }}
+      />
+
+      <div className="max-w-6xl relative z-10">
         <p
           ref={textRef}
           className="text-3xl md:text-6xl font-serif leading-[1.2] text-white/20"
