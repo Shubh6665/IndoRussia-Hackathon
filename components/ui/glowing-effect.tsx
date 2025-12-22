@@ -167,6 +167,16 @@ const GlowingEffect = memo(
           )}
         >
           <div
+            aria-hidden="true"
+            style={{ opacity: "var(--active)" as unknown as number }}
+            className={cn(
+              "absolute inset-0 rounded-[inherit] transition-opacity duration-300",
+              variant === "white"
+                ? "shadow-[0_0_0_1px_rgba(255,255,255,0.22),0_0_24px_rgba(255,255,255,0.18)]"
+                : "shadow-[0_0_0_1px_rgba(255,255,255,0.14),0_0_28px_rgba(221,123,187,0.16)]"
+            )}
+          />
+          <div
             className={cn(
               "glow",
               "rounded-[inherit]",

@@ -6,101 +6,94 @@ import { motion } from "framer-motion";
 
 import { TiltCard } from "@/components/ui/tilt-card";
 
-type Sponsor = {
+type SponsorItem = {
   name: string;
   logoSrc: string;
   invert?: boolean;
-} | null;
+};
+
+type SponsorCell = SponsorItem | null;
+
+const COLS = 7;
+const ROWS = 4;
 
 // NOTE: These are safe placeholder logos.
 // Replace the files in /public/sponsors/ with your real sponsor logos (PNG/SVG),
 // or update the `logoSrc` paths here.
-const sponsors: Sponsor[] = [
+const sponsors: SponsorCell[] = [
+  // 7 columns x 4 rows (28 cells). Only 12 sponsors; rest are intentional gaps.
   // Row 1
-  { name: "Allianz", logoSrc: "/sponsors/logo-01.svg" },
-  { name: "MSC", logoSrc: "/sponsors/logo-02.svg" },
-  { name: "B", logoSrc: "/sponsors/logo-03.svg" },
-  { name: "Doreca", logoSrc: "/sponsors/logo-04.svg" },
-  { name: "Accademia", logoSrc: "/sponsors/logo-05.svg" },
-  null, // Gap
-  { name: "Aosta", logoSrc: "/sponsors/logo-09.svg" },
-  { name: "Valle", logoSrc: "/sponsors/logo-10.svg" },
-  { name: "Brondi", logoSrc: "/sponsors/logo-11.svg" },
-  { name: "Valdier", logoSrc: "/sponsors/logo-12.svg" },
-  { name: "Forever", logoSrc: "/sponsors/logo-01.svg" },
+  { name: "Sponsor 01", logoSrc: "/sponsors/logo-01.svg" },
+  { name: "Sponsor 02", logoSrc: "/sponsors/logo-02.svg" },
+  { name: "Sponsor 03", logoSrc: "/sponsors/logo-03.svg" },
+  { name: "Sponsor 04", logoSrc: "/sponsors/logo-04.svg" },
+  { name: "Sponsor 05", logoSrc: "/sponsors/logo-05.svg" },
+  null,
+  { name: "Sponsor 06", logoSrc: "/sponsors/logo-06.svg" },
 
   // Row 2
-  null, // Gap
-  { name: "Manfrotto", logoSrc: "/sponsors/logo-06.svg" },
-  null, // Gap
-  { name: "Kemon", logoSrc: "/sponsors/logo-07.svg" },
-  { name: "Marchesi", logoSrc: "/sponsors/logo-08.svg" },
-  { name: "Corte", logoSrc: "/sponsors/logo-01.svg" }, // Logo in middle
-  { name: "TISG", logoSrc: "/sponsors/logo-02.svg" },
-  null, // Gap
-  { name: "Forged", logoSrc: "/sponsors/logo-03.svg" },
-  { name: "AVBN", logoSrc: "/sponsors/logo-04.svg" },
-  { name: "JBL", logoSrc: "/sponsors/logo-05.svg" },
+  null,
+  { name: "Sponsor 07", logoSrc: "/sponsors/logo-07.svg" },
+  null,
+  { name: "Sponsor 08", logoSrc: "/sponsors/logo-08.svg" },
+  { name: "Sponsor 09", logoSrc: "/sponsors/logo-09.svg" },
+  null,
+  null,
 
   // Row 3
-  { name: "Intel", logoSrc: "/sponsors/logo-09.svg" },
-  { name: "Charles Philip", logoSrc: "/sponsors/logo-10.svg" },
-  { name: "Scarpa Mondo", logoSrc: "/sponsors/logo-11.svg" },
-  { name: "BKFC", logoSrc: "/sponsors/logo-12.svg" },
-  { name: "Shinto", logoSrc: "/sponsors/logo-01.svg" },
-  null, // Gap
-  { name: "Nespresso", logoSrc: "/sponsors/logo-06.svg" },
-  { name: "Logitech", logoSrc: "/sponsors/logo-07.svg" },
-  { name: "Philips", logoSrc: "/sponsors/logo-08.svg" },
-  null, // Gap
-  { name: "Mont Blanc", logoSrc: "/sponsors/logo-01.svg" },
+  { name: "Sponsor 10", logoSrc: "/sponsors/logo-10.svg" },
+  null,
+  null,
+  { name: "Sponsor 11", logoSrc: "/sponsors/logo-11.svg" },
+  null,
+  null,
+  null,
 
   // Row 4
-  { name: "GoPro", logoSrc: "/sponsors/logo-02.svg" },
-  { name: "Pro", logoSrc: "/sponsors/logo-03.svg" },
-  null, // Gap
-  { name: "Yamamoto", logoSrc: "/sponsors/logo-04.svg" },
-  { name: "Lexar", logoSrc: "/sponsors/logo-05.svg" },
-  { name: "Pablo", logoSrc: "/sponsors/logo-09.svg" },
-  { name: "Nabla", logoSrc: "/sponsors/logo-10.svg" },
-  { name: "Asus", logoSrc: "/sponsors/logo-11.svg" },
-  { name: "Profoto", logoSrc: "/sponsors/logo-12.svg" },
-  { name: "Lavazza", logoSrc: "/sponsors/logo-01.svg" },
-  { name: "C", logoSrc: "/sponsors/logo-02.svg" },
-
-  // Row 5
-  { name: "Pandora", logoSrc: "/sponsors/logo-06.svg" },
-  null, // Gap
-  { name: "Enerfin", logoSrc: "/sponsors/logo-07.svg" },
-  { name: "Leiiia", logoSrc: "/sponsors/logo-08.svg" },
-  null, // Gap
-  { name: "Palazzo", logoSrc: "/sponsors/logo-02.svg" },
-  null, // Gap
-  { name: "Miele", logoSrc: "/sponsors/logo-03.svg" },
-  { name: "Wacom", logoSrc: "/sponsors/logo-04.svg" },
-  { name: "Punta", logoSrc: "/sponsors/logo-05.svg" },
-  null, // Gap
+  null,
+  { name: "Sponsor 12", logoSrc: "/sponsors/logo-12.svg" },
+  null,
+  null,
+  null,
+  null,
+  null,
 ];
 
 export default function SponsorsGrid() {
   return (
     <div className="w-full max-w-[1400px] mx-auto">
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-11 border-t border-l border-white/20">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
         {sponsors.map((sponsor, i) => (
-          <SponsorTile key={i} sponsor={sponsor} />
+          <SponsorTile key={i} sponsor={sponsor} index={i} />
         ))}
       </div>
     </div>
   );
 }
 
-function SponsorTile({ sponsor }: { sponsor: Sponsor }) {
+function SponsorTile({
+  sponsor,
+  index,
+}: {
+  sponsor: SponsorCell;
+  index: number;
+}) {
+  const row = Math.floor(index / COLS);
+  const col = index % COLS;
+
+  const tileBorderClasses =
+    "border border-dotted border-white/25 rounded-lg" +
+    (row === 0 ? " lg:border-t-0" : "") +
+    (row === ROWS - 1 ? " lg:border-b-0" : "") +
+    (col === 0 ? " lg:border-l-0" : "") +
+    (col === COLS - 1 ? " lg:border-r-0" : "");
+
   return (
-    <div className="relative border-b border-r border-white/20 border-dashed h-24 sm:h-32 w-full">
+    <div className={"relative h-24 sm:h-32 w-full " + tileBorderClasses}>
       {sponsor ? (
         <div style={{ perspective: 1000 }} className="h-full w-full">
           <TiltCard
-            className="group relative h-full w-full bg-transparent transition-colors duration-300 hover:bg-white/5 hover:z-10"
+            className="group relative h-full w-full bg-transparent transition-colors duration-300 hover:bg-white/5 hover:z-10 rounded-[inherit]"
           >
             <motion.div
               className="flex h-full w-full items-center justify-center p-4"
@@ -122,7 +115,7 @@ function SponsorTile({ sponsor }: { sponsor: Sponsor }) {
           </TiltCard>
         </div>
       ) : (
-        <div className="h-full w-full" />
+        <div className="h-full w-full rounded-[inherit]" />
       )}
     </div>
   );
