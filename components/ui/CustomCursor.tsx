@@ -38,6 +38,8 @@ export default function CustomCursor() {
     setEnabled(ok);
     if (!ok) return;
 
+    document.body.classList.add("has-custom-cursor");
+
     const onMove = (e: MouseEvent) => {
       const x = e.clientX;
       const y = e.clientY;
@@ -65,6 +67,7 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("mouseup", onUp);
+      document.body.classList.remove("has-custom-cursor");
     };
   }, [reducedMotion, setters]);
 

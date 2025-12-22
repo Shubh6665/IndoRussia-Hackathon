@@ -16,6 +16,7 @@ const tracks = [
     id: "01",
     title: "Artificial Intelligence",
     desc: "Generative models & Neural Networks",
+    badge: "AI / ML",
     color: "from-orange-500 to-red-500",
     component: <AIDemo />,
   },
@@ -23,6 +24,7 @@ const tracks = [
     id: "02",
     title: "Blockchain & FinTech",
     desc: "Decentralized systems for the new economy",
+    badge: "WEB3",
     color: "from-blue-500 to-cyan-500",
     component: <BlockchainDemo />,
   },
@@ -30,6 +32,7 @@ const tracks = [
     id: "03",
     title: "Space Technology",
     desc: "Satellite data & Interstellar comms",
+    badge: "ORBIT",
     color: "from-purple-500 to-pink-500",
     component: <SpaceDemo />,
   },
@@ -37,6 +40,7 @@ const tracks = [
     id: "04",
     title: "Cyber Security",
     desc: "Defense in the digital age",
+    badge: "SEC",
     color: "from-green-500 to-emerald-500",
     component: <SecurityDemo />,
   },
@@ -87,12 +91,35 @@ export default function Tracks() {
             </div>
             
             <div className="relative z-10 max-w-xl flex-shrink-0">
-              <h3 className={`text-5xl md:text-7xl font-serif font-bold mb-6 bg-gradient-to-r ${track.color} bg-clip-text text-transparent`}>
-                {track.title}
-              </h3>
-              <p className="text-xl md:text-2xl font-sans text-white/60">
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] uppercase tracking-[0.28em] text-white/45">
+                  Track {track.id}
+                </span>
+                <span className="h-px w-10 bg-white/15" />
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/60">
+                  {track.badge}
+                </span>
+              </div>
+
+              <div className="relative mt-4">
+                <div className="pointer-events-none absolute -left-2 -top-8 text-[80px] md:text-[96px] font-serif font-bold text-white/[0.03] select-none">
+                  {track.title.split(" ")[0]}
+                </div>
+                <h3
+                  className={`relative text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r ${track.color} bg-clip-text text-transparent leading-[0.95]`}
+                >
+                  {track.title}
+                </h3>
+              </div>
+
+              <p className="mt-6 text-lg md:text-xl font-sans text-white/55 leading-8">
                 {track.desc}
               </p>
+
+              <p className="mt-6 text-xs uppercase tracking-[0.22em] text-white/35">
+                Scroll to reveal · interact on the right
+              </p>
+
               <button className="mt-12 px-8 py-4 border border-white/20 rounded-full text-white uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">
                 Explore Track
               </button>

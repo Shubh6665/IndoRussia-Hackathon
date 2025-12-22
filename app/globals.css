@@ -18,7 +18,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
-  cursor: none; /* Custom cursor later */
+}
+
+body.has-custom-cursor {
+  cursor: none;
 }
 
 /* Noise Texture */
@@ -38,6 +41,42 @@ body {
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+
+/* Utilities */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 .font-serif {

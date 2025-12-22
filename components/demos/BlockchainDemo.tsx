@@ -5,6 +5,12 @@ import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { cn } from "@/lib/utils";
 
+type EventItem = {
+  id: number;
+  title: string;
+  meta: string;
+};
+
 type Block = {
   id: number;
   hash: string;
@@ -23,6 +29,19 @@ export default function BlockchainDemo() {
   ]);
   const [mining, setMining] = useState(false);
   const [pendingTx, setPendingTx] = useState(3);
+  const [deploying, setDeploying] = useState(false);
+  const [events, setEvents] = useState<EventItem[]>([
+    {
+      id: 1,
+      title: "Transfer",
+      meta: "0.18 ETH · confirmed",
+    },
+    {
+      id: 2,
+      title: "Swap",
+      meta: "USDT → INR · settled",
+    },
+  ]);
 
   const generateHash = () => {
     const chars = "0123456789ABCDEF";
@@ -31,6 +50,15 @@ export default function BlockchainDemo() {
     hash += "...";
     for (let i = 0; i < 2; i++) hash += chars[Math.floor(Math.random() * 16)];
     return hash;
+  };
+
+  const generateAddress = () => {
+    const chars = "0123456789abcdef";
+    let addr = "0x";
+    for (let i = 0; i < 8; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+    addr += "…";
+    for (let i = 0; i < 4; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+    return addr;
   };
 
   const mineBlock = async () => {
@@ -75,6 +103,31 @@ export default function BlockchainDemo() {
     }
   };
 
+  const deployContract = async () => {
+    if (deploying) return;
+    setDeploying(true);
+
+    if (!reducedMotion && chainRef.current) {
+      gsap.to(chainRef.current, {
+        filter: "drop-shadow(0 0 18px rgba(59,130,246,0.35))",
+        duration: 0.35,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.out",
+      });
+    }
+
+    await new Promise((r) => setTimeout(r, reducedMotion ? 450 : 1200));
+
+    const addr = generateAddress();
+    const gas = (0.9 + Math.random() * 1.2).toFixed(2);
+    setEvents((prev) => [
+      ...prev.slice(-3),
+      { id: Date.now(), title: "Contract Deployed", meta: `${addr} · ${gas}M gas` },
+    ]);
+    setDeploying(false);
+  };
+
   return (
     <div ref={containerRef} className="relative w-full max-w-[720px] h-[400px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
@@ -83,11 +136,23 @@ export default function BlockchainDemo() {
           <h3 className="text-lg font-serif text-white">Live Ledger</h3>
           <p className="text-xs text-white/50 uppercase tracking-widest">Blockchain Explorer</p>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-3 items-center">
             <div className="text-right">
                 <p className="text-[10px] uppercase text-white/40">Pending Tx</p>
                 <p className="text-sm font-mono text-blue-400">{pendingTx}</p>
             </div>
+            <button
+              onClick={deployContract}
+              disabled={deploying}
+              className={cn(
+                "px-5 py-2 rounded-full text-xs uppercase tracking-widest transition-all duration-300 border",
+                deploying
+                  ? "bg-white/5 border-white/10 text-white/45 cursor-wait"
+                  : "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+              )}
+            >
+              {deploying ? "Deploying…" : "Deploy"}
+            </button>
             <button
             onClick={mineBlock}
             disabled={mining}
@@ -149,6 +214,22 @@ export default function BlockchainDemo() {
             <div className="flex-shrink-0 w-48 h-48 rounded-xl border-2 border-dashed border-white/5 flex items-center justify-center">
                 <span className="text-white/20 text-xs uppercase tracking-widest">Next Block</span>
             </div>
+        </div>
+
+        {/* Event Stream */}
+        <div className="absolute bottom-6 left-6 right-6 z-20 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] uppercase tracking-widest text-white/45">Event Stream</p>
+            <p className="text-[10px] uppercase tracking-widest text-white/30">live</p>
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-3">
+            {events.slice(-3).map((e) => (
+              <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <p className="text-xs text-white/80">{e.title}</p>
+                <p className="mt-1 text-[11px] font-mono text-white/45 truncate">{e.meta}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

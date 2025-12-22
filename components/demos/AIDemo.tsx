@@ -34,12 +34,25 @@ export default function AIDemo() {
   const [prompt, setPrompt] = useState(demoPrompt);
   const [busy, setBusy] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(-1);
+  const [lang, setLang] = useState<"en" | "ru">("en");
   const [output, setOutput] = useState<string>(
     "Type a prompt and run the pipeline to see a live demo."
   );
 
   const [idleDemoEnabled, setIdleDemoEnabled] = useState(true);
   const lastInteractionRef = useRef<number>(Date.now());
+
+  const stepList = useMemo<Step[]>(() => {
+    if (lang === "ru") {
+      return [
+        { title: "Сбор", subtitle: "Сигналы" },
+        { title: "Обучение", subtitle: "Настройка" },
+        { title: "Инференс", subtitle: "Пайплайн" },
+        { title: "Доставка", subtitle: "Поток" },
+      ];
+    }
+    return steps;
+  }, [lang]);
 
   const outputText = useMemo(() => {
     return (
@@ -69,6 +82,77 @@ export default function AIDemo() {
     );
   }, []);
 
+  const copy = useMemo(() => {
+    if (lang === "ru") {
+      return {
+        title: "Живой предпросмотр пайплайна",
+        label: "Демо ИИ",
+        run: busy ? "Выполняется" : "Запуск",
+        prompt: "Запрос",
+        interactive: "Интерактивно",
+        tip: "Подсказка: попробуйте “переведи это обновление на русский”.",
+        reset: "Сброс",
+        pipeline: "Пайплайн",
+        working: "Рабочий вид",
+        output: "Вывод",
+        what: "Что это показывает",
+        whatTitle: "Реальное взаимодействие, не скриншот.",
+        whatBody:
+          "Эта панель — живая демо-зона: запрос запускает пайплайн-анимацию, затем потоково выводит результат. Это тот самый “working product” вайб премиальных лендингов.",
+        smooth: "Плавно",
+        premium: "Премиум",
+        smoothBody: "Скролл + микромоушн",
+        premiumBody: "Стекло, глубина, свечение",
+        footer:
+          reducedMotion
+            ? "Включено снижение анимации. Движение упрощено."
+            : "Наведи курсор для глубины. Нажми Запуск для анимации.",
+        idle: "Включить искры",
+      };
+    }
+
+    return {
+      title: "Live pipeline preview",
+      label: "AI Field Demo",
+      run: busy ? "Running" : "Run",
+      prompt: "Prompt",
+      interactive: "Interactive",
+      tip: "Tip: Try “translate this update to Russian”.",
+      reset: "Reset",
+      pipeline: "Pipeline",
+      working: "Working View",
+      output: "Output",
+      what: "What this shows",
+      whatTitle: "Real interaction, not a screenshot.",
+      whatBody:
+        "This panel is a live demo area: your prompt drives a staged pipeline animation, then streams a formatted result. It’s the same “working product” vibe you saw on premium landing pages.",
+      smooth: "Smooth",
+      premium: "Premium",
+      smoothBody: "Scroll + micro motion",
+      premiumBody: "Glass, depth, glow",
+      footer:
+        reducedMotion
+          ? "Reduced motion enabled. Animations are simplified."
+          : "Hover the demo for depth. Click Run for animation.",
+      idle: "Enable idle sparkle",
+    };
+  }, [busy, lang, reducedMotion]);
+
+  function detectLangFromPrompt(value: string) {
+    const v = value.toLowerCase();
+    const asksRussian =
+      v.includes("to russian") ||
+      v.includes("in russian") ||
+      v.includes("into russian") ||
+      v.includes("рус") ||
+      v.includes("на русский") ||
+      v.includes("по-рус") ||
+      v.includes("переведи") ||
+      v.includes("перевести") ||
+      v.includes("russian language");
+    return asksRussian ? ("ru" as const) : ("en" as const);
+  }
+
   useEffect(() => {
     if (!lineRef.current) return;
     gsap.set(lineRef.current, { scaleX: 0, transformOrigin: "left center" });
@@ -93,6 +177,9 @@ export default function AIDemo() {
     setOutput("Initializing pipeline…");
     setActiveStep(-1);
 
+    const nextLang = detectLangFromPrompt(prompt);
+    setLang(nextLang);
+
     if (!reducedMotion) {
       gsap.killTweensOf([lineRef.current, cardsRef.current]);
       gsap.to(cardsRef.current, {
@@ -109,26 +196,30 @@ export default function AIDemo() {
       });
     }
 
-    for (let i = 0; i < steps.length; i++) {
+    for (let i = 0; i < stepList.length; i++) {
       setActiveStep(i);
-      setOutput(`${steps[i].title}: ${steps[i].subtitle}…`);
+      setOutput(`${stepList[i].title}: ${stepList[i].subtitle}…`);
 
       const el = stepRefs.current[i];
       if (el && !reducedMotion) {
         gsap.fromTo(
           el,
           { scale: 0.98, opacity: 0.6 },
-          { scale: 1.5, opacity: 1, duration: 0.35, ease: "power3.out" }
+          { scale: 1.35, opacity: 1, duration: 0.35, ease: "power3.out" }
         );
-        gsap.to(el, { scale: 1, duration: 0.35, delay: 0.35, ease: "power3.in" });
+        gsap.to(el, {
+          scale: 1,
+          duration: 0.35,
+          delay: 0.35,
+          ease: "power3.in",
+        });
       }
 
       await sleep(520);
     }
 
     // Stream output text
-    const isRussian = prompt.toLowerCase().includes("russian") || prompt.toLowerCase().includes("translate");
-    const final = isRussian ? russianOutputText : outputText;
+    const final = nextLang === "ru" ? russianOutputText : outputText;
     setOutput("");
 
     if (reducedMotion) {
@@ -205,32 +296,38 @@ export default function AIDemo() {
       ref={rootRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative w-full max-w-[720px]"
+      className="relative w-full max-w-[720px] h-[420px]"
     >
       {/* Ambient glows */}
       <div className="pointer-events-none absolute -top-14 -left-14 h-56 w-56 rounded-full bg-orange-500/10 blur-[80px]" />
       <div className="pointer-events-none absolute -bottom-14 -right-14 h-56 w-56 rounded-full bg-blue-500/10 blur-[80px]" />
 
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+      <div className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
 
-        <div className="relative p-5 md:p-6">
+        {/* Token stream / energy */}
+        <div className="pointer-events-none absolute left-0 right-0 top-0 h-full opacity-70">
+          <div className="absolute left-[-20%] top-[86px] h-px w-[140%] bg-gradient-to-r from-orange-400/0 via-orange-200/35 to-blue-200/0" />
+          <div className="absolute left-[-20%] top-[86px] h-px w-[140%] animate-[pulse_2.2s_ease-in-out_infinite] bg-gradient-to-r from-orange-400/0 via-white/25 to-blue-200/0" />
+        </div>
+
+        <div className="relative flex h-full flex-col p-5 md:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-white/50">
-                AI Field Demo
+                {copy.label}
               </p>
               <p className="mt-1 font-serif text-xl text-white/90">
-                Live pipeline preview
+                {copy.title}
               </p>
             </div>
 
             <button
               onClick={animateRun}
               disabled={busy}
-              className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 disabled:opacity-50"
+              className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 disabled:opacity-50 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_0_24px_rgba(255,255,255,0.08)]"
             >
-              {busy ? "Running" : "Run"}
+              {copy.run}
             </button>
           </div>
 
@@ -239,15 +336,20 @@ export default function AIDemo() {
             <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                  Prompt
+                  {copy.prompt}
                 </p>
                 <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
-                  Interactive
+                  {copy.interactive}
                 </p>
               </div>
               <textarea
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setPrompt(next);
+                  // Keep UI language reactive even before running
+                  setLang(detectLangFromPrompt(next));
+                }}
                 onFocus={() => setIdleDemoEnabled(false)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -260,14 +362,14 @@ export default function AIDemo() {
               />
               <div className="mt-3 flex items-center justify-between">
                 <p className="text-xs text-white/35">
-                  Tip: Try “translate this update to Russian”.
+                  {copy.tip}
                 </p>
                 <button
                   onClick={() => setPrompt(demoPrompt)}
                   className="text-xs text-white/60 hover:text-white"
                   type="button"
                 >
-                  Reset
+                  {copy.reset}
                 </button>
               </div>
             </div>
@@ -275,7 +377,7 @@ export default function AIDemo() {
             {/* Flow */}
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                Pipeline
+                {copy.pipeline}
               </p>
               <div className="relative mt-4">
                 <div className="absolute left-0 right-0 top-[11px] h-px bg-white/10" />
@@ -285,7 +387,7 @@ export default function AIDemo() {
                 />
 
                 <div className="grid grid-cols-4 gap-2">
-                  {steps.map((s, idx) => (
+                  {stepList.map((s, idx) => (
                     <div key={s.title} className="flex flex-col items-center">
                       <div
                         ref={(el) => {
@@ -327,13 +429,13 @@ export default function AIDemo() {
           </div>
 
           {/* Floating “working” cards */}
-          <div className="mt-4 grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
+          <div className="mt-4 grid flex-1 gap-4 overflow-hidden md:grid-cols-[0.95fr_1.05fr]">
             <div
               ref={cardsRef}
-              className="relative rounded-2xl border border-white/10 bg-black/25 p-4 [transform-style:preserve-3d]"
+              className="relative rounded-2xl border border-white/10 bg-black/25 p-4 [transform-style:preserve-3d] overflow-hidden"
             >
               <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                Working View
+                {copy.working}
               </p>
 
               <div className="mt-4 space-y-3">
@@ -361,9 +463,9 @@ export default function AIDemo() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 max-h-[150px] overflow-y-auto custom-scrollbar">
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/50 sticky top-0 bg-black/20 backdrop-blur-sm py-1">
-                    Output
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 h-[124px] overflow-y-auto custom-scrollbar">
+                  <p className="text-xs uppercase tracking-[0.22em] text-white/50 sticky top-0 bg-black/30 backdrop-blur-sm py-1">
+                    {copy.output}
                   </p>
                   <pre className="mt-2 whitespace-pre-wrap font-sans text-xs leading-5 text-white/70">
                     {output}
@@ -372,31 +474,29 @@ export default function AIDemo() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
               <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                What this shows
+                {copy.what}
               </p>
               <p className="mt-3 font-serif text-2xl text-white/90">
-                Real interaction, not a screenshot.
+                {copy.whatTitle}
               </p>
               <p className="mt-3 text-sm leading-7 text-white/55">
-                This panel is a live demo area: your prompt drives a staged pipeline
-                animation, then streams a formatted result. It’s the same “working
-                product” vibe you saw on premium landing pages.
+                {copy.whatBody}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-white/55">
-                    Smooth
+                    {copy.smooth}
                   </p>
-                  <p className="mt-2 text-sm text-white/75">Scroll + micro motion</p>
+                  <p className="mt-2 text-sm text-white/75">{copy.smoothBody}</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-white/55">
-                    Premium
+                    {copy.premium}
                   </p>
-                  <p className="mt-2 text-sm text-white/75">Glass, depth, glow</p>
+                  <p className="mt-2 text-sm text-white/75">{copy.premiumBody}</p>
                 </div>
               </div>
             </div>
@@ -404,9 +504,7 @@ export default function AIDemo() {
 
           <div className="mt-4 flex items-center justify-between">
             <p className="text-xs text-white/35">
-              {reducedMotion
-                ? "Reduced motion enabled. Animations are simplified."
-                : "Hover the demo for depth. Click Run for animation."}
+              {copy.footer}
             </p>
             <button
               className="text-xs text-white/60 hover:text-white"
@@ -416,7 +514,7 @@ export default function AIDemo() {
                 lastInteractionRef.current = Date.now();
               }}
             >
-              Enable idle sparkle
+              {copy.idle}
             </button>
           </div>
         </div>
