@@ -25,6 +25,27 @@ export default function Navbar() {
 
     setIsTransitioning(true);
 
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const originX = rect.left + rect.width / 2;
+    const originY = rect.top + rect.height / 2;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const maxRadius = Math.max(
+      Math.hypot(originX - 0, originY - 0),
+      Math.hypot(originX - w, originY - 0),
+      Math.hypot(originX - 0, originY - h),
+      Math.hypot(originX - w, originY - h)
+    );
+
+    try {
+      sessionStorage.setItem(
+        "irh:routeTransitionOrigin",
+        JSON.stringify({ x: originX, y: originY, r: maxRadius })
+      );
+    } catch {
+      // ignore storage failures
+    }
+
     const tl = gsap.timeline({
       onComplete: () => {
         router.push("/register");
@@ -35,16 +56,19 @@ export default function Navbar() {
     tl.to(e.currentTarget, {
       backgroundColor: "white",
       color: "black",
-      duration: 0.5,
+      duration: 0.25,
       ease: "power2.inOut",
     });
 
     // Expand white circle from center
-    tl.to(transitionRef.current, {
-      clipPath: "circle(150% at 50% 50%)",
-      duration: 1.2,
-      ease: "power4.inOut",
+    tl.set(transitionRef.current, {
+      clipPath: `circle(0px at ${originX}px ${originY}px)`,
     });
+    tl.to(transitionRef.current, {
+      clipPath: `circle(${Math.ceil(maxRadius)}px at ${originX}px ${originY}px)`,
+      duration: 0.75,
+      ease: "power3.inOut",
+    }, "+=0.02");
   };
 
   return (
@@ -52,7 +76,7 @@ export default function Navbar() {
       <div
         ref={transitionRef}
         className="fixed inset-0 z-[999999] bg-white pointer-events-none"
-        style={{ clipPath: "circle(0% at 50% 50%)" }}
+        style={{ clipPath: "circle(0px at 50% 50%)" }}
       />
       <nav
         ref={navRef}
