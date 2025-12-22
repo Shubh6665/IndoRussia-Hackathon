@@ -24,11 +24,12 @@ export default function CustomCursor() {
   } | null>(null);
 
   useEffect(() => {
-    if (reducedMotion) return;
-
     const ok = canUseFinePointer();
     setEnabled(ok);
-    if (!ok) return;
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion || !enabled) return;
 
     // Refs exist only on the client; initialize GSAP setters lazily.
     if (dotRef.current && ringRef.current) {
@@ -78,7 +79,7 @@ export default function CustomCursor() {
       document.body.classList.remove("has-custom-cursor");
       settersRef.current = null;
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, enabled]);
 
   if (!enabled) return null;
 
@@ -86,11 +87,11 @@ export default function CustomCursor() {
     <>
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 z-[10000] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 backdrop-blur-md pointer-events-none mix-blend-difference"
+        className="fixed top-0 left-0 z-[9999999] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 backdrop-blur-md pointer-events-none mix-blend-difference"
       />
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 z-[10001] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white pointer-events-none mix-blend-difference"
+        className="fixed top-0 left-0 z-[10000000] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white pointer-events-none mix-blend-difference"
       />
     </>
   );

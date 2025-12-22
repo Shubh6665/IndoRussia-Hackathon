@@ -168,7 +168,7 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        "w-full rounded-none border border-white/15 bg-black/15 px-4 py-3 font-sans text-sm text-white/90 outline-none transition-colors placeholder:text-white/35 focus:border-white/35"
+        "w-full rounded-none border border-white/10 bg-white/[0.03] px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all placeholder:text-white/20 focus:border-white/30 focus:bg-white/[0.06] focus:ring-0"
       }
     />
   );
@@ -204,7 +204,7 @@ function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={
-        "w-full rounded-none border border-white/15 bg-black/15 px-4 py-3 font-sans text-sm text-white/90 outline-none transition-colors focus:border-white/35"
+        "w-full rounded-none border border-white/10 bg-white/[0.03] px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all focus:border-white/30 focus:bg-white/[0.06] focus:ring-0 appearance-none"
       }
     />
   );
@@ -232,11 +232,14 @@ function PrimaryButton({
   return (
     <button
       onClick={onClick}
-      className="group inline-flex items-center justify-center border border-white/25 bg-white/5 px-6 py-3 font-sans text-xs uppercase tracking-[0.25em] text-white/90 transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
+      className="group relative inline-flex items-center justify-center overflow-hidden border border-white/20 bg-white/5 px-8 py-4 font-sans text-[10px] uppercase tracking-[0.3em] text-white transition-all hover:border-white/40 focus:outline-none"
       type="button"
     >
-      <span className="translate-y-[0.5px]">{children}</span>
-      <span className="ml-4 inline-block h-[1px] w-10 bg-white/50 transition-all group-hover:w-14" />
+      <div className="absolute inset-0 -translate-x-full bg-white transition-transform duration-500 ease-out group-hover:translate-x-0" />
+      <span className="relative z-10 flex items-center transition-colors duration-500 group-hover:text-black">
+        {children}
+        <span className="ml-4 inline-block h-[1px] w-8 bg-current transition-all group-hover:w-12" />
+      </span>
     </button>
   );
 }
@@ -251,10 +254,10 @@ function SecondaryButton({
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center justify-center border border-white/15 bg-transparent px-6 py-3 font-sans text-xs uppercase tracking-[0.25em] text-white/70 transition-colors hover:border-white/25 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/15"
+      className="inline-flex items-center justify-center border border-white/10 bg-transparent px-8 py-4 font-sans text-[10px] uppercase tracking-[0.3em] text-white/60 transition-all hover:border-white/20 hover:text-white focus:outline-none"
       type="button"
     >
-      <span className="translate-y-[0.5px]">{children}</span>
+      {children}
     </button>
   );
 }
@@ -278,17 +281,17 @@ function SerialPage({
   }, [active]);
 
   return (
-    <div className="pointer-events-none absolute -left-20 top-1/2 z-0 h-[74svh] w-44 -translate-y-1/2 overflow-hidden border border-black/10 bg-white text-black">
+    <div className="pointer-events-none absolute -left-20 top-1/2 z-0 h-[74svh] w-44 -translate-y-1/2 overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl text-white">
       <div ref={trackRef} className="h-full w-full">
         {steps.map((s) => (
-          <div key={s.id} className="flex h-[74svh] w-full flex-col justify-between p-5">
-            <div className="font-sans text-[10px] uppercase tracking-[0.25em] text-black/65">
+          <div key={s.id} className="flex h-[74svh] w-full flex-col justify-between p-8">
+            <div className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40">
               Step
             </div>
-            <div className="font-serif text-7xl leading-none tracking-tight">
+            <div className="font-serif text-8xl leading-none tracking-tighter text-white/90">
               {s.serial}
             </div>
-            <div className="font-sans text-[10px] uppercase tracking-[0.25em] text-black/65">
+            <div className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40">
               {s.label}
             </div>
           </div>
@@ -300,12 +303,12 @@ function SerialPage({
 
 function RightOrangeStrip() {
   return (
-    <div className="pointer-events-none absolute -right-16 top-1/2 z-0 h-[74svh] w-24 -translate-y-1/2 border border-white/10 bg-orange-600/70">
-      <div className="absolute inset-y-0 right-3 flex flex-col items-center justify-between py-5">
+    <div className="pointer-events-none absolute -right-16 top-1/2 z-0 h-[74svh] w-24 -translate-y-1/2 border border-white/5 bg-orange-600/20 backdrop-blur-sm">
+      <div className="absolute inset-y-0 right-3 flex flex-col items-center justify-between py-8">
         {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
-            className="h-3 w-3 rounded-full bg-black/70"
+            className="h-1.5 w-1.5 rounded-full bg-orange-500/40"
             aria-hidden
           />
         ))}
@@ -412,6 +415,23 @@ export default function RegistrationExperience() {
         onEnterBack: () => setActiveStep(index),
       });
       triggers.push(t);
+
+      // Add entrance animation for section content
+      gsap.fromTo(
+        el.children,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
     });
 
     const parallax = gsap.to("[data-register-parallax]", {
