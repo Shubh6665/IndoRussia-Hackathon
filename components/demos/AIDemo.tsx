@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 type Step = {
   title: string;
@@ -296,7 +297,7 @@ export default function AIDemo() {
       ref={rootRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative w-full max-w-[780px] min-h-[500px] md:min-h-[540px]"
+      className="relative w-full max-w-[780px] min-h-[480px] md:min-h-[500px]"
     >
       {/* Ambient glows */}
       <div className="pointer-events-none absolute -top-14 -left-14 h-56 w-56 rounded-full bg-orange-500/10 blur-[80px]" />
@@ -333,96 +334,116 @@ export default function AIDemo() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
             {/* Prompt */}
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                  {copy.prompt}
-                </p>
-                <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
-                  {copy.interactive}
-                </p>
-              </div>
-              <textarea
-                value={prompt}
-                onChange={(e) => {
-                  const next = e.target.value;
-                  setPrompt(next);
-                  // Keep UI language reactive even before running
-                  setLang(detectLangFromPrompt(next));
-                }}
-                onFocus={() => setIdleDemoEnabled(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    animateRun();
-                  }
-                }}
-                placeholder="Ask the model…"
-                className="mt-3 h-28 w-full resize-none bg-transparent font-sans text-sm leading-6 text-white/85 outline-none placeholder:text-white/25"
+            <div className="relative rounded-2xl border border-white/10 bg-black/30 p-4 overflow-hidden">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={3}
               />
-              <div className="mt-3 flex items-center justify-between">
-                <p className="text-xs text-white/35">
-                  {copy.tip}
-                </p>
-                <button
-                  onClick={() => setPrompt(demoPrompt)}
-                  className="text-xs text-white/60 hover:text-white"
-                  type="button"
-                >
-                  {copy.reset}
-                </button>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
+                    {copy.prompt}
+                  </p>
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
+                    {copy.interactive}
+                  </p>
+                </div>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setPrompt(next);
+                    // Keep UI language reactive even before running
+                    setLang(detectLangFromPrompt(next));
+                  }}
+                  onFocus={() => setIdleDemoEnabled(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      animateRun();
+                    }
+                  }}
+                  placeholder="Ask the model…"
+                  className="mt-3 h-28 w-full resize-none bg-transparent font-sans text-sm leading-6 text-white/85 outline-none placeholder:text-white/25"
+                />
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-xs text-white/35">
+                    {copy.tip}
+                  </p>
+                  <button
+                    onClick={() => setPrompt(demoPrompt)}
+                    className="text-xs text-white/60 hover:text-white"
+                    type="button"
+                  >
+                    {copy.reset}
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Flow */}
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                {copy.pipeline}
-              </p>
-              <div className="relative mt-4">
-                <div className="absolute left-0 right-0 top-[11px] h-px bg-white/10" />
-                <div
-                  ref={lineRef}
-                  className="absolute left-0 top-[11px] h-px w-full bg-gradient-to-r from-orange-300/80 via-white/60 to-blue-300/80"
-                />
+            <div className="relative rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={3}
+              />
+              <div className="relative z-10">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
+                  {copy.pipeline}
+                </p>
+                <div className="relative mt-4">
+                  <div className="absolute left-0 right-0 top-[11px] h-px bg-white/10" />
+                  <div
+                    ref={lineRef}
+                    className="absolute left-0 top-[11px] h-px w-full bg-gradient-to-r from-orange-300/80 via-white/60 to-blue-300/80"
+                  />
 
-                <div className="grid grid-cols-4 gap-2">
-                  {stepList.map((s, idx) => (
-                    <div key={s.title} className="flex flex-col items-center">
-                      <div
-                        ref={(el) => {
-                          stepRefs.current[idx] = el;
-                        }}
-                        className={
-                          "h-6 w-6 rounded-full border border-white/15 bg-black/60 " +
-                          (activeStep >= idx
-                            ? "shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_0_32px_rgba(255,255,255,0.12)]"
-                            : "opacity-60")
-                        }
-                      >
+                  <div className="grid grid-cols-4 gap-2">
+                    {stepList.map((s, idx) => (
+                      <div key={s.title} className="flex flex-col items-center">
                         <div
+                          ref={(el) => {
+                            stepRefs.current[idx] = el;
+                          }}
                           className={
-                            "h-full w-full rounded-full transition-colors duration-300 " +
+                            "h-6 w-6 rounded-full border border-white/15 bg-black/60 " +
                             (activeStep >= idx
-                              ? idx === 0
-                                ? "bg-orange-400 shadow-[0_0_15px_rgba(251,146,60,0.6)]"
-                                : idx === 3
-                                  ? "bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.6)]"
-                                  : "bg-white shadow-[0_0_15px_rgba(255,255,255,0.6)]"
-                              : "bg-transparent")
+                              ? "shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_0_32px_rgba(255,255,255,0.12)]"
+                              : "opacity-60")
                           }
-                        />
+                        >
+                          <div
+                            className={
+                              "h-full w-full rounded-full transition-colors duration-300 " +
+                              (activeStep >= idx
+                                ? idx === 0
+                                  ? "bg-orange-400 shadow-[0_0_15px_rgba(251,146,60,0.6)]"
+                                  : idx === 3
+                                    ? "bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.6)]"
+                                    : "bg-white shadow-[0_0_15px_rgba(255,255,255,0.6)]"
+                                : "bg-transparent")
+                            }
+                          />
+                        </div>
+                        <div className="mt-3 text-center">
+                          <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">
+                            {s.title}
+                          </p>
+                          <p className="mt-1 text-[11px] text-white/35">
+                            {s.subtitle}
+                          </p>
+                        </div>
                       </div>
-                      <div className="mt-3 text-center">
-                        <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">
-                          {s.title}
-                        </p>
-                        <p className="mt-1 text-[11px] text-white/35">
-                          {s.subtitle}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -434,69 +455,113 @@ export default function AIDemo() {
               ref={cardsRef}
               className="relative rounded-2xl border border-white/10 bg-black/25 p-4 [transform-style:preserve-3d] overflow-hidden"
             >
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                {copy.working}
-              </p>
+              <div className="relative z-10">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
+                  {copy.working}
+                </p>
 
-              <div className="mt-4 space-y-3">
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-white/85">Improve keyboard shortcuts</p>
-                    <span className="rounded-full bg-orange-500/10 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-orange-200">
-                      Urgent
-                    </span>
+                <div className="mt-4 space-y-3">
+                  <div className="relative rounded-xl border border-white/10 bg-white/[0.04] p-3 overflow-hidden">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={3}
+                    />
+                    <div className="flex items-center justify-between relative z-10">
+                      <p className="text-sm text-white/85">Improve keyboard shortcuts</p>
+                      <span className="rounded-full bg-orange-500/10 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-orange-200">
+                        Urgent
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-white/45 relative z-10">
+                      Suggested: add RU/HI quick actions + hover preview.
+                    </p>
                   </div>
-                  <p className="mt-2 text-xs text-white/45">
-                    Suggested: add RU/HI quick actions + hover preview.
-                  </p>
-                </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-white/80">Update payment gateway integration</p>
-                    <span className="rounded-full bg-blue-500/10 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-blue-200">
-                      On track
-                    </span>
+                  <div className="relative rounded-xl border border-white/10 bg-white/[0.03] p-3 overflow-hidden">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={3}
+                    />
+                    <div className="flex items-center justify-between relative z-10">
+                      <p className="text-sm text-white/80">Update payment gateway integration</p>
+                      <span className="rounded-full bg-blue-500/10 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-blue-200">
+                        On track
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-white/45 relative z-10">
+                      Model finds blockers and proposes owners.
+                    </p>
                   </div>
-                  <p className="mt-2 text-xs text-white/45">
-                    Model finds blockers and proposes owners.
-                  </p>
-                </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 h-[124px] overflow-y-auto custom-scrollbar">
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/50 sticky top-0 bg-black/30 backdrop-blur-sm py-1">
-                    {copy.output}
-                  </p>
-                  <pre className="mt-2 whitespace-pre-wrap font-sans text-xs leading-5 text-white/70">
-                    {output}
-                  </pre>
+                  <div className="relative rounded-xl border border-white/10 bg-white/[0.02] p-3 h-[124px] overflow-y-auto custom-scrollbar overflow-hidden">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={3}
+                    />
+                    <p className="text-xs uppercase tracking-[0.22em] text-white/50 sticky top-0 bg-black/30 backdrop-blur-sm py-1 relative z-10">
+                      {copy.output}
+                    </p>
+                    <pre className="mt-2 whitespace-pre-wrap font-sans text-xs leading-5 text-white/70 relative z-10">
+                      {output}
+                    </pre>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
-                {copy.what}
-              </p>
-              <p className="mt-3 font-serif text-2xl text-white/90">
-                {copy.whatTitle}
-              </p>
-              <p className="mt-3 text-sm leading-7 text-white/55">
-                {copy.whatBody}
-              </p>
+            <div className="relative rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
+              <div className="relative z-10">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">
+                  {copy.what}
+                </p>
+                <p className="mt-3 font-serif text-2xl text-white/90">
+                  {copy.whatTitle}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-white/55">
+                  {copy.whatBody}
+                </p>
 
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/55">
-                    {copy.smooth}
-                  </p>
-                  <p className="mt-2 text-sm text-white/75">{copy.smoothBody}</p>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/55">
-                    {copy.premium}
-                  </p>
-                  <p className="mt-2 text-sm text-white/75">{copy.premiumBody}</p>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="relative rounded-xl border border-white/10 bg-white/[0.03] p-3 overflow-hidden">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={3}
+                    />
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-white/55 relative z-10">
+                      {copy.smooth}
+                    </p>
+                    <p className="mt-2 text-sm text-white/75 relative z-10">{copy.smoothBody}</p>
+                  </div>
+                  <div className="relative rounded-xl border border-white/10 bg-white/[0.03] p-3 overflow-hidden">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={3}
+                    />
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-white/55 relative z-10">
+                      {copy.premium}
+                    </p>
+                    <p className="mt-2 text-sm text-white/75 relative z-10">{copy.premiumBody}</p>
+                  </div>
                 </div>
               </div>
             </div>

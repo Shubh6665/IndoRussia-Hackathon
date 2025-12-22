@@ -129,7 +129,7 @@ export default function BlockchainDemo() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[780px] min-h-[500px] md:min-h-[540px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
+    <div ref={containerRef} className="relative w-full max-w-[780px] min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
         <div>
@@ -169,67 +169,72 @@ export default function BlockchainDemo() {
       </div>
 
       {/* Chain Visualization */}
-      <div className="flex-1 relative overflow-hidden p-8 flex items-center">
+      <div className="flex-1 relative overflow-hidden flex flex-col">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
         
-        {/* Connection Line */}
-        <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2 z-0"></div>
+        {/* Blocks Section */}
+        <div className="flex-1 relative flex items-center p-8">
+            {/* Connection Line */}
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2 z-0"></div>
 
-        <div ref={chainRef} className="flex gap-8 items-center z-10 overflow-x-auto w-full px-4 no-scrollbar scroll-smooth">
-            {blocks.map((block, i) => (
-                <div 
-                    key={block.id}
-                    className="flex-shrink-0 w-48 h-48 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-4 flex flex-col justify-between group hover:border-blue-500/50 transition-colors duration-300 relative"
-                >
-                    {/* Connector */}
-                    {i > 0 && (
-                        <div className="absolute -left-8 top-1/2 w-8 h-0.5 bg-blue-500/30">
-                            <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-                        </div>
-                    )}
+            <div ref={chainRef} className="flex gap-8 items-center z-10 overflow-x-auto w-full px-4 no-scrollbar scroll-smooth">
+                {blocks.map((block, i) => (
+                    <div 
+                        key={block.id}
+                        className="flex-shrink-0 w-48 h-48 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-4 flex flex-col justify-between group hover:border-blue-500/50 transition-colors duration-300 relative"
+                    >
+                        {/* Connector */}
+                        {i > 0 && (
+                            <div className="absolute -left-8 top-1/2 w-8 h-0.5 bg-blue-500/30">
+                                <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
+                            </div>
+                        )}
 
-                    <div className="flex justify-between items-start">
-                        <span className="text-4xl font-bold text-white/10 group-hover:text-blue-500/20 transition-colors">#{block.id}</span>
-                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse"></div>
+                        <div className="flex justify-between items-start">
+                            <span className="text-4xl font-bold text-white/10 group-hover:text-blue-500/20 transition-colors">#{block.id}</span>
+                            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse"></div>
+                        </div>
+                        
+                        <div className="space-y-2 font-mono text-[10px] text-white/60">
+                            <div className="flex justify-between">
+                                <span>Hash:</span>
+                                <span className="text-white/90">{block.hash}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Prev:</span>
+                                <span className="text-white/40">{block.prevHash}</span>
+                            </div>
+                            <div className="pt-2 border-t border-white/10 flex justify-between text-blue-300">
+                                <span>Tx Count:</span>
+                                <span>{block.transactions}</span>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div className="space-y-2 font-mono text-[10px] text-white/60">
-                        <div className="flex justify-between">
-                            <span>Hash:</span>
-                            <span className="text-white/90">{block.hash}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Prev:</span>
-                            <span className="text-white/40">{block.prevHash}</span>
-                        </div>
-                        <div className="pt-2 border-t border-white/10 flex justify-between text-blue-300">
-                            <span>Tx Count:</span>
-                            <span>{block.transactions}</span>
-                        </div>
-                    </div>
+                ))}
+                
+                {/* Ghost Block (Placeholder for next) */}
+                <div className="flex-shrink-0 w-48 h-48 rounded-xl border-2 border-dashed border-white/5 flex items-center justify-center">
+                    <span className="text-white/20 text-xs uppercase tracking-widest">Next Block</span>
                 </div>
-            ))}
-            
-            {/* Ghost Block (Placeholder for next) */}
-            <div className="flex-shrink-0 w-48 h-48 rounded-xl border-2 border-dashed border-white/5 flex items-center justify-center">
-                <span className="text-white/20 text-xs uppercase tracking-widest">Next Block</span>
             </div>
         </div>
 
         {/* Event Stream */}
-        <div className="absolute bottom-6 left-6 right-6 z-20 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] uppercase tracking-widest text-white/45">Event Stream</p>
-            <p className="text-[10px] uppercase tracking-widest text-white/30">live</p>
-          </div>
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            {events.slice(-3).map((e) => (
-              <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                <p className="text-xs text-white/80">{e.title}</p>
-                <p className="mt-1 text-[11px] font-mono text-white/45 truncate">{e.meta}</p>
-              </div>
-            ))}
-          </div>
+        <div className="z-20 p-6 pt-0">
+            <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4">
+            <div className="flex items-center justify-between">
+                <p className="text-[10px] uppercase tracking-widest text-white/45">Event Stream</p>
+                <p className="text-[10px] uppercase tracking-widest text-white/30">live</p>
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-3">
+                {events.slice(-3).map((e) => (
+                <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <p className="text-xs text-white/80">{e.title}</p>
+                    <p className="mt-1 text-[11px] font-mono text-white/45 truncate">{e.meta}</p>
+                </div>
+                ))}
+            </div>
+            </div>
         </div>
       </div>
     </div>
