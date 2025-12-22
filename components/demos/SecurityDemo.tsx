@@ -58,7 +58,7 @@ export default function SecurityDemo() {
   }, [firewallActive, lockdown]);
 
   return (
-    <div className="relative w-full max-w-[720px] h-[400px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
+    <div className="relative w-full max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
         <div className="flex items-center gap-3">

@@ -4,19 +4,61 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
+// Particle system for background stars
+function StarField({ count = 80 }: { count?: number }) {
+  const stars = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        delay: Math.random() * 3,
+      })),
+    [count]
+  );
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className="absolute rounded-full bg-white animate-pulse"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: star.size,
+            height: star.size,
+            animationDelay: `${star.delay}s`,
+            opacity: 0.3 + Math.random() * 0.4,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function SpaceDemo() {
   const reducedMotion = usePrefersReducedMotion();
   const radarRef = useRef<HTMLDivElement>(null);
   const sweepRef = useRef<HTMLDivElement>(null);
   const pingRef = useRef<HTMLDivElement>(null);
+  const orbitRef = useRef<HTMLDivElement>(null);
+
   const [scanning, setScanning] = useState(true);
-  const [targets, setTargets] = useState<{ x: number; y: number; id: number }[]>([]);
+  const [targets, setTargets] = useState<{ x: number; y: number; id: number; type: string }[]>([
+    { x: 35, y: 28, id: 1001, type: "SAT" },
+    { x: 72, y: 45, id: 1002, type: "DEB" },
+  ]);
   const [log, setLog] = useState<string[]>([
     "Uplink established · 1420.4 MHz",
     "Telemetry sync · OK",
+    "Tracking 2 objects",
   ]);
   const [sat, setSat] = useState({ x: 52, y: 44 });
+  const [selected, setSelected] = useState<number | null>(null);
   const draggingRef = useRef(false);
+  const [signalStrength, setSignalStrength] = useState(75);
 
   const telemetry = useMemo(() => {
     const base = 40 + (sat.y - 50) * 0.6;
@@ -25,9 +67,27 @@ export default function SpaceDemo() {
     const c = Math.max(12, Math.min(92, base - 8));
     const d = Math.max(12, Math.min(92, base + 14));
     const e = Math.max(12, Math.min(92, base + 4));
-    return [a, b, c, d, e];
+    const f = Math.max(12, Math.min(92, base - 6));
+    return [a, b, c, d, e, f];
   }, [sat.y]);
 
+  // Orbital animation
+  useEffect(() => {
+    if (reducedMotion || !orbitRef.current) return;
+
+    const tl = gsap.timeline({ repeat: -1 });
+    tl.to(orbitRef.current, {
+      rotation: 360,
+      duration: 12,
+      ease: "linear",
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, [reducedMotion]);
+
+  // Sweep animation
   useEffect(() => {
     if (reducedMotion || !sweepRef.current) return;
 
@@ -44,25 +104,34 @@ export default function SpaceDemo() {
     };
   }, [scanning, reducedMotion]);
 
+  // Auto-update signal strength
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSignalStrength((prev) => {
+        const change = (Math.random() - 0.5) * 8;
+        return Math.max(60, Math.min(95, prev + change));
+      });
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-discover targets
   useEffect(() => {
     if (!scanning) return;
 
     const interval = window.setInterval(() => {
-      if (Math.random() > 0.78) {
-        const newTarget = {
-          id: Date.now(),
-          x: Math.random() * 80 + 10,
-          y: Math.random() * 80 + 10,
-        };
-        setTargets((prev) => [...prev.slice(-5), newTarget]);
-        setLog((prev) => [
-          ...prev.slice(-6),
-          `Target acquired · OBJ-${newTarget.id.toString().slice(-4)} · Δ${
-            (Math.random() * 9).toFixed(2)
-          } dB`,
-        ]);
-      }
-    }, 1600);
+      const newTarget = {
+        id: 1000 + Math.floor(Math.random() * 9000),
+        x: 15 + Math.random() * 70,
+        y: 15 + Math.random() * 70,
+        type: Math.random() > 0.7 ? "DEB" : "SAT",
+      };
+      setTargets((prev) => [...prev.slice(-7), newTarget]);
+      setLog((prev) => [
+        ...prev.slice(-5),
+        `Acquired · ${newTarget.type}-${newTarget.id.toString().slice(-4)}`,
+      ]);
+    }, 3500);
 
     return () => window.clearInterval(interval);
   }, [scanning]);
@@ -77,20 +146,25 @@ export default function SpaceDemo() {
     const rect = el.getBoundingClientRect();
     const x = ((clientX - rect.left) / rect.width) * 100;
     const y = ((clientY - rect.top) / rect.height) * 100;
-    const newTarget = { id: Date.now(), x: clamp(x, 6, 94), y: clamp(y, 6, 94) };
-    setTargets((prev) => [...prev.slice(-5), newTarget]);
+    const newTarget = {
+      id: 2000 + Date.now() % 1000,
+      x: clamp(x, 6, 94),
+      y: clamp(y, 6, 94),
+      type: "MAN",
+    };
+    setTargets((prev) => [...prev.slice(-7), newTarget]);
     setLog((prev) => [
-      ...prev.slice(-6),
-      `Manual ping · OBJ-${newTarget.id.toString().slice(-4)} confirmed`,
+      ...prev.slice(-5),
+      `Manual ping · MAN-${newTarget.id.toString().slice(-4)} confirmed`,
     ]);
 
-    if (!reducedMotion) {
+    if (!reducedMotion && el) {
       gsap.fromTo(
         el,
         { boxShadow: "0 0 0 rgba(168,85,247,0)" },
         {
-          boxShadow: "0 0 64px rgba(168,85,247,0.22)",
-          duration: 0.35,
+          boxShadow: "0 0 96px rgba(168,85,247,0.35)",
+          duration: 0.45,
           yoyo: true,
           repeat: 1,
           ease: "power2.out",
@@ -100,14 +174,14 @@ export default function SpaceDemo() {
   }
 
   function ping() {
-    setLog((prev) => [...prev.slice(-6), "Ping sent · waiting for echo…"]);
+    setLog((prev) => [...prev.slice(-5), "Ping sent · waiting for echo…"]);
     if (reducedMotion || !pingRef.current) return;
     gsap.fromTo(
       pingRef.current,
       { opacity: 0.0, scale: 0.7 },
-      { opacity: 0.65, scale: 1.45, duration: 0.8, ease: "power2.out" }
+      { opacity: 0.7, scale: 1.6, duration: 0.9, ease: "power2.out" }
     );
-    gsap.to(pingRef.current, { opacity: 0, duration: 0.45, delay: 0.55 });
+    gsap.to(pingRef.current, { opacity: 0, duration: 0.5, delay: 0.6 });
   }
 
   useEffect(() => {
@@ -117,12 +191,24 @@ export default function SpaceDemo() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-[720px] h-[400px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex">
+    <div className="relative w-full max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl overflow-hidden flex">
+      {/* Ambient effects */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-pink-900/30" />
+      <div className="pointer-events-none absolute -top-32 -right-32 h-64 w-64 rounded-full bg-purple-500/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-pink-500/20 blur-[120px]" />
+
+      <StarField count={100} />
+
       {/* Sidebar Controls */}
-      <div className="w-1/3 border-r border-white/10 p-6 flex flex-col justify-between bg-white/5">
+      <div className="w-2/5 border-r border-white/10 p-6 flex flex-col justify-between bg-white/[0.03] relative z-10">
         <div>
-            <h3 className="text-lg font-serif text-white mb-1">Mission Control</h3>
-            <p className="text-xs text-white/50 uppercase tracking-widest mb-6">Orbital Telemetry</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="h-2 w-2 rounded-full bg-purple-400 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+            <h3 className="text-lg md:text-xl font-serif text-white">Mission Control</h3>
+          </div>
+          <p className="text-[10px] text-white/50 uppercase tracking-[0.26em] mb-6">
+            Orbital Telemetry System
+          </p>
             
             <div className="space-y-4">
                 <div className="bg-black/40 p-3 rounded-lg border border-white/5">

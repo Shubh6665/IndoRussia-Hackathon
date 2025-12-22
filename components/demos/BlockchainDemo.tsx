@@ -129,7 +129,7 @@ export default function BlockchainDemo() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[720px] h-[400px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
+    <div ref={containerRef} className="relative w-full max-w-[780px] min-h-[500px] md:min-h-[540px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
         <div>
