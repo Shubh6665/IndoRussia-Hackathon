@@ -51,6 +51,53 @@ export default function EventDetails() {
           </motion.p>
         </div>
 
+        {/* General Info */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+          <TiltCard className="group relative p-8 rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">Overview</p>
+              <h3 className="mt-3 text-2xl font-serif font-bold text-white">Nature of Event</h3>
+              <p className="mt-4 text-white/60 leading-relaxed">
+                ENERGY-O-THON is a bilateral Indo-Russian energy hackathon, fostering cross-border innovation in the energy sector.
+              </p>
+            </div>
+          </TiltCard>
+
+          <TiltCard className="group relative p-8 rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">Scale</p>
+              <h3 className="mt-3 text-2xl font-serif font-bold text-white">Global Ambition</h3>
+              <p className="mt-4 text-white/60 leading-relaxed">
+                The world’s first BRICS nations hackathon, with plans to scale to a global magnitude of 50,000 participants.
+              </p>
+            </div>
+          </TiltCard>
+
+          <TiltCard className="group relative p-8 rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">People</p>
+              <h3 className="mt-3 text-2xl font-serif font-bold text-white">Leadership</h3>
+
+              <div className="mt-5 space-y-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">Initiator & Organizer</p>
+                  <p className="mt-2 text-white/80 font-medium leading-relaxed">GO-BRICS Business Forum</p>
+                </div>
+                <div className="h-px bg-white/10" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">Visionary Leadership</p>
+                  <p className="mt-2 text-white/80 font-medium leading-relaxed">
+                    Ms. Purnima Anand (President, BRICS International Forum)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TiltCard>
+        </div>
+
         {/* Phases - Immersive Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
           <TiltCard className="group relative p-10 rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-white/[0.08] to-transparent overflow-hidden">
@@ -201,8 +248,80 @@ export default function EventDetails() {
           </div>
         </div>
 
+        {/* Submission & Benefits - New Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
+          <TiltCard className="p-10 rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent">
+            <h3 className="text-3xl font-serif font-bold text-white mb-8">Submission Format</h3>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-white/45 mb-6">Deliverables</p>
+
+            <div className="space-y-5">
+              <div className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+                <div className="mt-0.5 h-10 w-10 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+                  <svg className="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 3h7l3 3v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M14 3v4a2 2 0 0 0 2 2h4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 13h8M8 17h6" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Pitch Deck</h4>
+                  <p className="mt-1 text-white/60 text-sm leading-relaxed">Maximum of 5 slides covering problem, solution, and impact.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+                <div className="mt-0.5 h-10 w-10 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+                  <svg className="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 10l4.553-2.276A1 1 0 0 1 21 8.618v6.764a1 1 0 0 1-1.447.894L15 14" />
+                    <rect x="3" y="7" width="12" height="10" rx="2" strokeWidth={1.8} />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Video Presentation</h4>
+                  <p className="mt-1 text-white/60 text-sm leading-relaxed">5–10 minute recorded video uploaded to Dion/GO-BRICS platform.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+                <div className="mt-0.5 h-10 w-10 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+                  <svg className="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 11v1a7 7 0 0 1-14 0v-1" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 19v4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 23h8" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Live Pitch</h4>
+                  <p className="mt-1 text-white/60 text-sm leading-relaxed">3 minutes for the pitch and 2 minutes for Q&A.</p>
+                </div>
+              </div>
+            </div>
+          </TiltCard>
+
+          <TiltCard className="p-10 rounded-[2.5rem] border border-white/10 bg-gradient-to-bl from-white/[0.05] to-transparent">
+            <h3 className="text-3xl font-serif font-bold text-white mb-8">Benefits</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                "Global academic & industry exposure",
+                "Internships & placement prospects",
+                "Student exchange opportunities",
+                "Certificates & recognition",
+                "Pathway to Phase 2 Pan-India Round"
+              ].map((benefit, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                  <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-white/80 text-sm font-medium">{benefit}</span>
+                </div>
+              ))}
+            </div>
+          </TiltCard>
+        </div>
+
         {/* Footer Info */}
-        <div className="border-t border-white/10 pt-16 text-center">
+        <div className="border-t border-white/10 pt-16 pb-16 text-center">
           <p className="text-white/40 text-sm mb-4">Ready to innovate?</p>
           <div className="inline-flex items-center gap-8 px-8 py-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
             <div className="text-left">

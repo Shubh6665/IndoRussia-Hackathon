@@ -51,11 +51,11 @@ export default function Tracks() {
   const triggerRef = useRef(null);
 
   useEffect(() => {
-    const pin = gsap.fromTo(
+    if (!sectionRef.current || !triggerRef.current) return;
+
+    const tween = gsap.fromTo(
       sectionRef.current,
-      {
-        translateX: 0,
-      },
+      { translateX: 0 },
       {
         translateX: "-300vw",
         ease: "none",
@@ -63,20 +63,27 @@ export default function Tracks() {
         scrollTrigger: {
           trigger: triggerRef.current,
           start: "top top",
-          end: "2000 top",
+          end: "+=4000",
           scrub: 0.6,
           pin: true,
+          anticipatePin: 1,
+          pinSpacing: true,
+          invalidateOnRefresh: true,
         },
       }
     );
 
+    // Re-measure right after mount so the pin start can't be based on a pre-font/pre-layout state.
+    ScrollTrigger.refresh();
+
     return () => {
-      pin.kill();
+      tween.scrollTrigger?.kill();
+      tween.kill();
     };
   }, []);
 
   return (
-    <section ref={triggerRef} className="overflow-hidden bg-[#050505]">
+    <section id="tracks" ref={triggerRef} className="overflow-hidden bg-[#050505] relative">
       <div
         ref={sectionRef}
         className="h-screen w-[400vw] flex flex-row relative"

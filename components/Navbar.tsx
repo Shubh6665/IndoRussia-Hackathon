@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
+import Image from "next/image";
+
 export default function Navbar() {
   const navRef = useRef(null);
   const router = useRouter();
@@ -104,9 +106,7 @@ export default function Navbar() {
         ref={navRef}
         className="fixed top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-50 mix-blend-difference text-white"
       >
-        <Link href="/" className="text-2xl font-serif font-bold tracking-tighter">
-          IRH '25
-        </Link>
+        {/* Left: Navigation Links */}
         <div
           className={
             "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
@@ -115,7 +115,7 @@ export default function Navbar() {
               : "px-0 py-0 bg-transparent border-transparent")
           }
         >
-          {["Manifesto" , "Details", "Tracks", "Timeline", "Sponsors"].map((item) => {
+          {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
             const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
             return (
               <Link
@@ -133,6 +133,21 @@ export default function Navbar() {
             );
           })}
         </div>
+
+        {/* Center: Logos */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 md:gap-6">
+          <div className="relative w-10 h-10 md:w-12 md:h-12 opacity-90 hover:opacity-100 transition-opacity">
+            <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
+          </div>
+          <div className="relative w-14 h-14 md:w-20 md:h-20 hover:scale-105 transition-transform">
+            <Image src="/hackathon.png" alt="Hackathon" fill className="object-contain" />
+          </div>
+          <div className="relative w-10 h-10 md:w-12 md:h-12 opacity-90 hover:opacity-100 transition-opacity">
+            <Image src="/rgipt.png" alt="RGIPT" fill className="object-contain" />
+          </div>
+        </div>
+
+        {/* Right: Register Button */}
         <Link
           href="/register"
           onClick={handleRegisterClick}

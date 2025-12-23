@@ -24,6 +24,18 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
 
     lenis.on("scroll", ScrollTrigger.update);
 
+    // Ensure ScrollTrigger measures the final layout (fonts/images/Lenis settle).
+    // Without this, pin start/end can be calculated too early and sections appear to “jump”.
+    const refresh = () => ScrollTrigger.refresh();
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(refresh);
+      // store raf2 in closure for cleanup via cancelAnimationFrame below
+      (refresh as any).__raf2 = raf2;
+    });
+
+    window.addEventListener("load", refresh, { once: true });
+    window.addEventListener("resize", refresh, { passive: true });
+
     const tickerFn = (time: number) => {
       lenis.raf(time * 1000);
     };
@@ -35,6 +47,12 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     return () => {
       lenis.destroy();
       gsap.ticker.remove(tickerFn);
+
+      window.removeEventListener("resize", refresh);
+      window.removeEventListener("load", refresh as any);
+      cancelAnimationFrame(raf1);
+      const raf2 = (refresh as any).__raf2;
+      if (typeof raf2 === "number") cancelAnimationFrame(raf2);
     };
   }, [pathname]);
 

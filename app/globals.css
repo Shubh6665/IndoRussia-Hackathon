@@ -20,6 +20,10 @@ body {
   font-family: var(--font-manrope), sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body.has-custom-cursor {
   cursor: none;
 }
