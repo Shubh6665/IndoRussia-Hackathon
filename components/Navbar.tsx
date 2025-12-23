@@ -15,6 +15,8 @@ export default function Navbar() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionRef = useRef<HTMLDivElement>(null);
   const [isHomeScrolled, setIsHomeScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.fromTo(
@@ -48,6 +50,7 @@ export default function Navbar() {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
+    setIsMenuOpen(false);
 
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const originX = rect.left + rect.width / 2;
@@ -106,32 +109,58 @@ export default function Navbar() {
         ref={navRef}
         className="fixed top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-[10001] mix-blend-difference text-white"
       >
-        {/* Left: Navigation Links */}
-        <div
-          className={
-            "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
-            (isHomeScrolled
-              ? "px-6 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md"
-              : "px-0 py-0 bg-transparent border-transparent")
-          }
-        >
-          {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
-            const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
-            return (
-              <Link
-                key={item}
-                href={href}
-                className="relative group overflow-hidden"
-              >
-                <span className="block transition-transform duration-500 group-hover:-translate-y-full">
-                  {item}
-                </span>
-                <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-500 group-hover:translate-y-0 text-gray-400">
-                  {item}
-                </span>
-              </Link>
-            );
-          })}
+        {/* Left: Hamburger Menu (Mobile) / Navigation Links (Desktop) */}
+        <div className="flex items-center gap-4">
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-start"
+            aria-label="Toggle menu"
+          >
+            <span
+              className={`h-0.5 bg-white transition-all duration-300 ${
+                isMenuOpen ? "w-6 rotate-45 translate-y-2" : "w-6"
+              }`}
+            />
+            <span
+              className={`h-0.5 bg-white transition-all duration-300 ${
+                isMenuOpen ? "opacity-0" : "w-5"
+              }`}
+            />
+            <span
+              className={`h-0.5 bg-white transition-all duration-300 ${
+                isMenuOpen ? "w-6 -rotate-45 -translate-y-2" : "w-4"
+              }`}
+            />
+          </button>
+
+          {/* Desktop Navigation Links */}
+          <div
+            className={
+              "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
+              (isHomeScrolled
+                ? "px-6 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md"
+                : "px-0 py-0 bg-transparent border-transparent")
+            }
+          >
+            {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
+              const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
+              return (
+                <Link
+                  key={item}
+                  href={href}
+                  className="relative group overflow-hidden"
+                >
+                  <span className="block transition-transform duration-500 group-hover:-translate-y-full">
+                    {item}
+                  </span>
+                  <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-500 group-hover:translate-y-0 text-gray-400">
+                    {item}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Center: Logos */}
@@ -147,15 +176,49 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Right: Register Button */}
+        {/* Right: Register Button (Desktop) */}
         <Link
           href="/register"
           onClick={handleRegisterClick}
-          className="border border-white/20 px-6 py-2 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300"
+          className="hidden md:block border border-white/20 px-6 py-2 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300"
         >
           Register
         </Link>
       </nav>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div
+          ref={menuRef}
+          className="fixed top-0 left-0 w-full h-screen bg-black/95 backdrop-blur-md z-[9999] md:hidden flex flex-col pt-24 px-8"
+        >
+          {/* Menu Items */}
+          <div className="flex flex-col gap-6 mb-12">
+            {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
+              const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
+              return (
+                <Link
+                  key={item}
+                  href={href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg uppercase tracking-widest font-sans hover:text-white/60 transition-colors"
+                >
+                  {item}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Register Button in Menu */}
+          <Link
+            href="/register"
+            onClick={handleRegisterClick}
+            className="border border-white/20 px-6 py-3 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 text-center"
+          >
+            Register
+          </Link>
+        </div>
+      )}
     </>
   );
 }
