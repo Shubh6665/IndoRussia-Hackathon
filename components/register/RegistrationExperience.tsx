@@ -35,8 +35,8 @@ type FormState = {
   degree: string;
   graduationYear: "2025" | "2026" | "2027" | "2028" | "";
   rollId: string;
-  collegeIdFilename: string;
-  resumeFilename: string;
+  collegeIdUrl: string;
+  resumeUrl: string;
   linkedin: string;
   github: string;
   portfolio: string;
@@ -225,20 +225,33 @@ function FileInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
 function PrimaryButton({
   children,
   onClick,
+  disabled = false,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
-      onClick={onClick}
-      className="group relative inline-flex items-center justify-center overflow-hidden border border-white/20 bg-white/5 px-8 py-4 font-sans text-[10px] uppercase tracking-[0.3em] text-white transition-all hover:border-white/40 focus:outline-none"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`group relative inline-flex items-center justify-center overflow-hidden border border-white/20 bg-white/5 px-8 py-4 font-sans text-[10px] uppercase tracking-[0.3em] text-white transition-all focus:outline-none ${
+        disabled 
+          ? 'opacity-50 cursor-not-allowed' 
+          : 'hover:border-white/40'
+      }`}
       type="button"
     >
-      <div className="absolute inset-0 -translate-x-full bg-white transition-transform duration-500 ease-out group-hover:translate-x-0" />
-      <span className="relative z-10 flex items-center transition-colors duration-500 group-hover:text-black">
+      <div className={`absolute inset-0 -translate-x-full bg-white transition-transform duration-500 ease-out ${
+        !disabled ? 'group-hover:translate-x-0' : ''
+      }`} />
+      <span className={`relative z-10 flex items-center transition-colors duration-500 ${
+        !disabled ? 'group-hover:text-black' : ''
+      }`}>
         {children}
-        <span className="ml-4 inline-block h-[1px] w-8 bg-current transition-all group-hover:w-12" />
+        <span className={`ml-4 inline-block h-[1px] w-8 bg-current transition-all ${
+          !disabled ? 'group-hover:w-12' : ''
+        }`} />
       </span>
     </button>
   );
@@ -337,6 +350,8 @@ export default function RegistrationExperience() {
   const [activeStep, setActiveStep] = useState(0);
   const [savedSnapshot, setSavedSnapshot] = useState<Partial<FormState>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [form, setForm] = useState<FormState>(() => {
     const saved = loadSavedForm();
@@ -352,8 +367,8 @@ export default function RegistrationExperience() {
       degree: saved.degree ?? "",
       graduationYear: saved.graduationYear ?? "",
       rollId: saved.rollId ?? "",
-      collegeIdFilename: saved.collegeIdFilename ?? "",
-      resumeFilename: saved.resumeFilename ?? "",
+      collegeIdUrl: saved.collegeIdUrl ?? "",
+      resumeUrl: saved.resumeUrl ?? "",
       linkedin: saved.linkedin ?? "",
       github: saved.github ?? "",
       portfolio: saved.portfolio ?? "",
@@ -497,21 +512,56 @@ export default function RegistrationExperience() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Minimal gating: require agreements + captcha checkbox
     if (!form.agreeTerms || !form.agreeConduct || !form.captcha) {
       scrollToStep(6);
       return;
     }
 
-    saveFormPatch(form);
-    setSavedSnapshot(loadSavedForm());
-    setSubmitted(true);
-    confetti({
-      particleCount: 120,
-      spread: 70,
-      origin: { y: 0.65 },
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Save form data locally first
+      saveFormPatch(form);
+      setSavedSnapshot(loadSavedForm());
+
+      // Submit to API
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit registration');
+      }
+
+      const result = await response.json();
+      console.log('Registration submitted successfully:', result);
+
+      setSubmitted(true);
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.65 },
+      });
+
+      // Clear saved form data after successful submission
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+      
+    } catch (error) {
+      console.error('Registration submission error:', error);
+      setSubmitError(error instanceof Error ? error.message : 'Failed to submit registration');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -621,7 +671,7 @@ export default function RegistrationExperience() {
                       </p>
                       <p>
                         <span className="text-white/90">Documents Ready:</span> Keep your
-                        Resume and College ID (PDF/JPG) handy for upload.
+Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
                       </p>
                     </div>
 
@@ -816,44 +866,26 @@ export default function RegistrationExperience() {
                     </Field>
 
                     <Field
-                      label="Upload College ID Card"
-                      hint="Formats: JPG, PNG, PDF (Max 2MB)"
+                      label="College ID Card URL"
+                      hint="Upload to Google Drive/Dropbox and share the link"
                     >
-                      <div className="space-y-2">
-                        <FileInput
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          onChange={(e) =>
-                            setForm((p) => ({
-                              ...p,
-                              collegeIdFilename: e.target.files?.[0]?.name ?? "",
-                            }))
-                          }
-                        />
-                        {form.collegeIdFilename ? (
-                          <p className="font-sans text-xs text-white/55">
-                            Selected: {form.collegeIdFilename}
-                          </p>
-                        ) : null}
-                      </div>
+                      <TextInput
+                        placeholder="https://drive.google.com/file/d/..."
+                        value={form.collegeIdUrl}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, collegeIdUrl: e.target.value }))
+                        }
+                      />
                     </Field>
 
-                    <Field label="Resume / CV" hint="Formats: PDF (Max 5MB) - Sponsors hire from here!">
-                      <div className="space-y-2">
-                        <FileInput
-                          accept=".pdf"
-                          onChange={(e) =>
-                            setForm((p) => ({
-                              ...p,
-                              resumeFilename: e.target.files?.[0]?.name ?? "",
-                            }))
-                          }
-                        />
-                        {form.resumeFilename ? (
-                          <p className="font-sans text-xs text-white/55">
-                            Selected: {form.resumeFilename}
-                          </p>
-                        ) : null}
-                      </div>
+                    <Field label="Resume / CV URL" hint="Upload PDF to Google Drive/Dropbox and share the link - Sponsors hire from here!">
+                      <TextInput
+                        placeholder="https://drive.google.com/file/d/..."
+                        value={form.resumeUrl}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, resumeUrl: e.target.value }))
+                        }
+                      />
                     </Field>
 
                     <div className="space-y-5">
@@ -1421,9 +1453,20 @@ export default function RegistrationExperience() {
                         </label>
                       </div>
 
+                      {submitError && (
+                        <div className="rounded border border-red-500/30 bg-red-500/10 px-4 py-3">
+                          <div className="font-sans text-sm text-red-400">
+                            Error: {submitError}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap gap-3">
-                        <PrimaryButton onClick={handleSubmit}>
-                          COMPLETE REGISTRATION
+                        <PrimaryButton 
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? 'SUBMITTING...' : 'COMPLETE REGISTRATION'}
                         </PrimaryButton>
                         <SecondaryButton
                           onClick={() =>
