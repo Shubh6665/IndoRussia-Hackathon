@@ -5,8 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const [origin, setOrigin] = useState<{ x: number; y: number; r: number } | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    setIsHydrated(true);
     try {
       const raw = sessionStorage.getItem("irh:routeTransitionOrigin");
       if (!raw) return;
@@ -25,14 +27,21 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clip = useMemo(() => {
-    const x = origin?.x ?? (typeof window !== "undefined" ? window.innerWidth / 2 : 0);
-    const y = origin?.y ?? (typeof window !== "undefined" ? window.innerHeight / 2 : 0);
+    if (!isHydrated) {
+      return {
+        initial: "circle(0px at 50% 50%)",
+        animate: "circle(0px at 50% 50%)",
+      };
+    }
+    
+    const x = origin?.x ?? window.innerWidth / 2;
+    const y = origin?.y ?? window.innerHeight / 2;
     const r = origin?.r ?? 2000;
     return {
       initial: `circle(${Math.ceil(r)}px at ${Math.round(x)}px ${Math.round(y)}px)`,
       animate: `circle(0px at ${Math.round(x)}px ${Math.round(y)}px)`,
     };
-  }, [origin]);
+  }, [origin, isHydrated]);
 
   return (
     <div className="relative min-h-screen bg-background">
