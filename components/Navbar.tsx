@@ -27,6 +27,9 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    // Close menu when route changes
+    setIsMenuOpen(false);
+
     if (pathname !== "/") {
       setIsHomeScrolled(false);
       return;
@@ -164,7 +167,7 @@ export default function Navbar() {
         </div>
 
         {/* Center: Logos */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 md:gap-6">
+        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 md:gap-6 ${isMenuOpen ? 'hidden md:flex' : 'flex'}`}>
           <div className="relative w-10 h-10 md:w-12 md:h-12 opacity-90 hover:opacity-100 transition-opacity">
             <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
           </div>
@@ -180,7 +183,7 @@ export default function Navbar() {
         <Link
           href="/register"
           onClick={handleRegisterClick}
-          className="hidden md:block border border-white/20 px-6 py-2 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300"
+          className="hidden md:inline-block shrink-0 border border-white/20 px-5 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 whitespace-nowrap"
         >
           Register
         </Link>
@@ -190,11 +193,14 @@ export default function Navbar() {
       {isMenuOpen && (
         <div
           ref={menuRef}
-          className="fixed top-0 left-0 w-full h-screen bg-black/95 backdrop-blur-md z-[9999] md:hidden flex flex-col pt-24 px-8"
+          className="fixed inset-0 bg-black/95 backdrop-blur-md z-[9999] md:hidden flex flex-col pt-24 px-8"
+          style={{
+            animation: "fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
         >
           {/* Menu Items */}
           <div className="flex flex-col gap-6 mb-12">
-            {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
+            {["Manifesto", "Details", "Tracks", "Sponsors"].map((item, idx) => {
               const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
               return (
                 <Link
@@ -202,6 +208,9 @@ export default function Navbar() {
                   href={href}
                   onClick={() => setIsMenuOpen(false)}
                   className="text-lg uppercase tracking-widest font-sans hover:text-white/60 transition-colors"
+                  style={{
+                    animation: `fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.05}s both`,
+                  }}
                 >
                   {item}
                 </Link>
@@ -213,10 +222,26 @@ export default function Navbar() {
           <Link
             href="/register"
             onClick={handleRegisterClick}
-            className="border border-white/20 px-6 py-3 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 text-center"
+            className="w-full border border-white/20 px-6 py-3 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 text-center"
+            style={{
+              animation: `fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both`,
+            }}
           >
             Register
           </Link>
+
+          <style>{`
+            @keyframes fadeInUp {
+              from {
+                opacity: 0;
+                transform: translateY(10px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
         </div>
       )}
     </>
