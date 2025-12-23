@@ -14,6 +14,17 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
 
     gsap.registerPlugin(ScrollTrigger);
 
+    // Always start new routes from the top.
+    // (usePathname doesn't change for hash navigation, so in-page anchors still work.)
+    try {
+      if (typeof window !== "undefined") {
+        window.scrollTo(0, 0);
+        if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
+      }
+    } catch {
+      // ignore
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -21,6 +32,13 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       gestureOrientation: "vertical",
       smoothWheel: true,
     });
+
+    // Ensure Lenis internal state matches the forced top position.
+    try {
+      lenis.scrollTo(0, { immediate: true });
+    } catch {
+      // ignore
+    }
 
     lenis.on("scroll", ScrollTrigger.update);
 

@@ -191,11 +191,16 @@ export default function EventDetails() {
           </div>
 
           <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-colors flex flex-col justify-center text-center">
-            <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-6 text-2xl">
-              💡
+            <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-6">
+              <svg className="h-7 w-7 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 22h6" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10 19h4" />
+              </svg>
             </div>
-            <h3 className="text-xl font-serif font-bold text-white mb-2">Theme</h3>
-            <p className="text-white/60">Digital Advancements in the Energy Sector</p>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-white/45">Theme</p>
+            <h3 className="mt-3 text-xl font-serif font-bold text-white">Digital Advancements</h3>
+            <p className="mt-2 text-white/60 leading-relaxed">in the Energy Sector</p>
           </div>
         </div>
 
@@ -300,20 +305,30 @@ export default function EventDetails() {
           </TiltCard>
 
           <TiltCard className="p-10 rounded-[2.5rem] border border-white/10 bg-gradient-to-bl from-white/[0.05] to-transparent">
-            <h3 className="text-3xl font-serif font-bold text-white mb-8">Benefits</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h3 className="text-3xl font-serif font-bold text-white">Benefits</h3>
+            <p className="mt-3 text-[11px] uppercase tracking-[0.28em] text-white/45">What participants gain</p>
+
+            <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 "Global academic & industry exposure",
                 "Internships & placement prospects",
                 "Student exchange opportunities",
                 "Certificates & recognition",
-                "Pathway to Phase 2 Pan-India Round"
+                "Pathway to Phase 2 Pan-India Round",
               ].map((benefit, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                  <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-white/80 text-sm font-medium">{benefit}</span>
+                <div
+                  key={i}
+                  className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 hover:bg-white/[0.05] transition-colors"
+                >
+                  <div className="mt-0.5 h-10 w-10 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+                    <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white/85 font-medium leading-relaxed">{benefit}</p>
+                    
+                  </div>
                 </div>
               ))}
             </div>

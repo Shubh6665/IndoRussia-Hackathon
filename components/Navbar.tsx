@@ -104,7 +104,7 @@ export default function Navbar() {
       />
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-50 mix-blend-difference text-white"
+        className="fixed top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-[10001] mix-blend-difference text-white"
       >
         {/* Left: Navigation Links */}
         <div
