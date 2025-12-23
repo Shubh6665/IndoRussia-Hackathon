@@ -656,21 +656,21 @@ export default function RegistrationExperience() {
 
                     <div className="space-y-3">
                       <p>
-                        <span className="text-white/90">Accuracy is Key:</span>{" "}
+                        <span className="text-white/90 font-bold">Accuracy is Key:</span>{" "}
                         Please fill in your details exactly as they appear on your Government
                         or College ID. Mismatched information may lead to disqualification.
                       </p>
                       <p>
-                        <span className="text-white/90">Team Leader Protocol:</span>{" "}
+                        <span className="text-white/90 font-bold">Team Leader Protocol:</span>{" "}
                         If participating as a team, only the Team Leader should fill out the
                         initial registration and invite members.
                       </p>
                       <p>
-                        <span className="text-white/90">One Entry Per Person:</span> Duplicate
+                        <span className="text-white/90 font-bold">One Entry Per Person:</span> Duplicate
                         registrations will be rejected.
                       </p>
                       <p>
-                        <span className="text-white/90">Documents Ready:</span> Keep your
+                        <span className="text-white/90 font-bold">Documents Ready:</span> Keep your
 Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
                       </p>
                     </div>
