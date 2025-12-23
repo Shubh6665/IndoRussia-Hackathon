@@ -115,7 +115,7 @@ export default function Navbar() {
               : "px-0 py-0 bg-transparent border-transparent")
           }
         >
-          {["Manifesto", "Tracks", "Timeline", "Sponsors"].map((item) => {
+          {["Manifesto" , "Details", "Tracks", "Timeline", "Sponsors"].map((item) => {
             const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
             return (
               <Link

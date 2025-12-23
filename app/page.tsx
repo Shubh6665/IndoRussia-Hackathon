@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
+import EventDetails from "@/components/EventDetails";
 import Manifesto from "@/components/Manifesto";
 import Tracks from "@/components/Tracks";
 import { TiltCard } from "@/components/ui/tilt-card";
@@ -12,6 +13,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Manifesto />
+      <EventDetails />
       <Tracks />
       
       <section className="py-24 px-6 md:px-20">

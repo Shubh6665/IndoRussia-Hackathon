@@ -78,12 +78,12 @@ export default function Hero() {
         <h1 className="text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
           <div className="overflow-hidden">
             <span ref={textRef1} className="block bg-gradient-to-r from-orange-200 to-white bg-clip-text text-transparent">
-              Indo
+              Energy
             </span>
           </div>
           <div className="overflow-hidden">
             <span ref={textRef2} className="block bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-              Russia
+              O-Thon
             </span>
           </div>
         </h1>
@@ -94,7 +94,7 @@ export default function Hero() {
         className="absolute bottom-12 left-8 md:left-12 z-20 max-w-md"
       >
         <p className="text-white/80 font-sans text-sm md:text-base uppercase tracking-widest leading-relaxed border-l border-white/30 pl-4">
-          A diplomatic fusion of code & culture. <br />
+          Indo-Russian Bilateral Energy Hackathon <br />
           <span className="text-white font-bold">Hackathon 2025</span>
         </p>
       </div>
