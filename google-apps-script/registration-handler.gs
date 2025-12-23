@@ -40,8 +40,8 @@ function doPost(e) {
       // Section 1: Personal Information
       data.fullName || '',
       data.email || '',
-      data.phone || '',
-      data.whatsapp || '',
+      sanitizePhoneNumber(data.phone),
+      sanitizePhoneNumber(data.whatsapp),
       data.whatsappSameAsPhone ? 'Yes' : 'No',
       data.gender || '',
       
@@ -82,7 +82,16 @@ function doPost(e) {
     ];
 
     // Add the data to the sheet
-    sheet.appendRow(rowData);
+    const lastRow = sheet.getLastRow();
+    const targetRow = lastRow + 1;
+    const range = sheet.getRange(targetRow, 1, 1, rowData.length);
+    
+    // CRITICAL: Set number format to plain text BEFORE setting values to prevent formula parsing errors
+    // This ensures that values like "+91 929292" are treated as text, not formulas
+    range.setNumberFormat('@');
+    
+    // Now set the values - they will be interpreted as plain text due to the format above
+    range.setValues([rowData]);
     
     // Generate a unique ID for this registration
     const registrationId = 'IRH-' + Date.now();
@@ -107,6 +116,18 @@ function doPost(e) {
       }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+/**
+ * Sanitize phone numbers to prevent formula parsing errors in Google Sheets
+ * Prepends an apostrophe which tells Sheets to treat it as text (apostrophe won't be displayed)
+ */
+function sanitizePhoneNumber(phoneNumber) {
+  if (!phoneNumber || phoneNumber === '') {
+    return '';
+  }
+  // Prepend apostrophe to force Google Sheets to treat this as text
+  return "'" + phoneNumber;
 }
 
 function getOrCreateSheet() {

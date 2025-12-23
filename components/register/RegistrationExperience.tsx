@@ -26,8 +26,10 @@ type FormState = {
   // Section 1
   fullName: string;
   email: string;
-  phone: string;
-  whatsapp: string;
+  phoneCountryCode: string; // "+91" or "+7"
+  phoneNumber: string; // just the digits
+  whatsappCountryCode: string; // "+91" or "+7"
+  whatsappNumber: string; // just the digits
   whatsappSameAsPhone: boolean;
   gender: Gender;
 
@@ -103,6 +105,11 @@ function defaultValueForKey(key: keyof FormState): FormState[keyof FormState] {
     case "agreeConduct":
     case "consentResumeShare":
       return false;
+    case "phoneCountryCode":
+    case "whatsappCountryCode":
+      return "+91";
+    case "phoneNumber":
+    case "whatsappNumber":
     case "captchaToken":
     case "needsAccommodation":
     case "hasIdea":
@@ -376,8 +383,10 @@ export default function RegistrationExperience() {
   const [form, setForm] = useState<FormState>(() => ({
     fullName: "",
     email: "",
-    phone: "",
-    whatsapp: "",
+    phoneCountryCode: "+91",
+    phoneNumber: "",
+    whatsappCountryCode: "+91",
+    whatsappNumber: "",
     whatsappSameAsPhone: false,
     gender: "",
 
@@ -472,10 +481,14 @@ export default function RegistrationExperience() {
   }, []);
 
   useEffect(() => {
-    // Keep WhatsApp value aligned when toggle is on
+    // Keep WhatsApp number aligned when toggle is on
     if (!form.whatsappSameAsPhone) return;
-    setForm((prev) => ({ ...prev, whatsapp: prev.phone }));
-  }, [form.phone, form.whatsappSameAsPhone]);
+    setForm((prev) => ({ 
+      ...prev, 
+      whatsappCountryCode: prev.phoneCountryCode,
+      whatsappNumber: prev.phoneNumber 
+    }));
+  }, [form.phoneCountryCode, form.phoneNumber, form.whatsappSameAsPhone]);
 
   useEffect(() => {
     // Clamp team member inputs based on size
@@ -572,7 +585,7 @@ export default function RegistrationExperience() {
     
     switch (stepIndex) {
       case 1: // Personal Information
-        fieldsToValidate.push('fullName', 'email', 'phone');
+        fieldsToValidate.push('fullName', 'email', 'phoneNumber');
         break;
         
       case 2: // Academic Details
@@ -617,7 +630,7 @@ export default function RegistrationExperience() {
     const errors: Record<string, boolean> = {};
     
     // Always required fields
-    const alwaysRequired = ['fullName', 'email', 'phone', 'university', 'degree', 'graduationYear', 'rollId', 'participationMode', 'preferredTrack', 'attendanceMode', 'city', 'agreeTerms', 'agreeConduct', 'consentResumeShare', 'captchaToken'];
+    const alwaysRequired = ['fullName', 'email', 'phoneNumber', 'university', 'degree', 'graduationYear', 'rollId', 'participationMode', 'preferredTrack', 'attendanceMode', 'city', 'agreeTerms', 'agreeConduct', 'consentResumeShare', 'captchaToken'];
     
     alwaysRequired.forEach(field => {
       const value = form[field as keyof FormState];
@@ -701,6 +714,23 @@ export default function RegistrationExperience() {
     setSubmitError(null);
 
     try {
+      // Combine phone country code + number without space
+      const phone = form.phoneCountryCode + form.phoneNumber;
+      const whatsapp = form.whatsappSameAsPhone 
+        ? phone 
+        : form.whatsappCountryCode + form.whatsappNumber;
+
+      // Create form data with combined phone numbers
+      const formDataToSubmit = {
+        ...form,
+        phone,
+        whatsapp,
+        phoneCountryCode: undefined, // Remove from submission
+        phoneNumber: undefined,
+        whatsappCountryCode: undefined,
+        whatsappNumber: undefined,
+      };
+
       // Save form data locally first
       saveFormPatch(form);
       setSavedSnapshot(loadSavedForm());
@@ -711,7 +741,7 @@ export default function RegistrationExperience() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formDataToSubmit),
       });
 
       if (!response.ok) {
@@ -911,32 +941,60 @@ export default function RegistrationExperience() {
                       />
                     </Field>
 
-                    <Field label="Phone Number" hint="With Country Code +91 / +7 for Russia" required error={fieldErrors.phone}>
-                      <TextInput
-                        placeholder="+91 9876543210"
-                        inputMode="tel"
-                        value={form.phone}
-                        error={fieldErrors.phone}
-                        onChange={(e) => {
-                          setForm((p) => ({ ...p, phone: e.target.value }));
-                          validateField('phone', e.target.value);
-                        }}
-                      />
+                    <Field label="Phone Number" hint="Select country code, then enter your number" required error={fieldErrors.phoneNumber}>
+                      <div className="flex gap-3">
+                        <SelectInput
+                          value={form.phoneCountryCode}
+                          onChange={(e) =>
+                            setForm((p) => ({ ...p, phoneCountryCode: e.target.value }))
+                          }
+                          className="w-32"
+                        >
+                          <option value="+91">+91 (India)</option>
+                          <option value="+7">+7 (Russia)</option>
+                        </SelectInput>
+                        <TextInput
+                          placeholder="9876543210"
+                          inputMode="tel"
+                          value={form.phoneNumber}
+                          error={fieldErrors.phoneNumber}
+                          onChange={(e) => {
+                            setForm((p) => ({ ...p, phoneNumber: e.target.value }));
+                            validateField('phoneNumber', e.target.value);
+                          }}
+                          className="flex-1"
+                        />
+                      </div>
                     </Field>
 
                     <Field label="WhatsApp Number">
                       <div className="space-y-3">
-                        <TextInput
-                          placeholder={
-                            form.whatsappSameAsPhone
-                              ? "Same as Phone Number"
-                              : "+91 9876543210"
-                          }
-                          inputMode="tel"
-                          disabled={form.whatsappSameAsPhone}
-                          value={form.whatsapp}
-                          onChange={(e) => setForm((p) => ({ ...p, whatsapp: e.target.value }))}
-                        />
+                        {!form.whatsappSameAsPhone && (
+                          <div className="flex gap-3">
+                            <SelectInput
+                              value={form.whatsappCountryCode}
+                              onChange={(e) =>
+                                setForm((p) => ({ ...p, whatsappCountryCode: e.target.value }))
+                              }
+                              className="w-32"
+                            >
+                              <option value="+91">+91 (India)</option>
+                              <option value="+7">+7 (Russia)</option>
+                            </SelectInput>
+                            <TextInput
+                              placeholder="9876543210"
+                              inputMode="tel"
+                              value={form.whatsappNumber}
+                              onChange={(e) => setForm((p) => ({ ...p, whatsappNumber: e.target.value }))}
+                              className="flex-1"
+                            />
+                          </div>
+                        )}
+                        {form.whatsappSameAsPhone && (
+                          <div className="border border-white/15 bg-black/10 px-4 py-3 font-sans text-sm text-white/70">
+                            Same as Phone: {form.phoneCountryCode}{form.phoneNumber}
+                          </div>
+                        )}
                         <label className="flex items-center gap-3 font-sans text-xs text-white/70">
                           <input
                             type="checkbox"
@@ -946,7 +1004,6 @@ export default function RegistrationExperience() {
                               setForm((p) => ({
                                 ...p,
                                 whatsappSameAsPhone: e.target.checked,
-                                whatsapp: e.target.checked ? p.phone : p.whatsapp,
                               }))
                             }
                           />
@@ -978,8 +1035,10 @@ export default function RegistrationExperience() {
                         keys={[
                           "fullName",
                           "email",
-                          "phone",
-                          "whatsapp",
+                          "phoneCountryCode",
+                          "phoneNumber",
+                          "whatsappCountryCode",
+                          "whatsappNumber",
                           "whatsappSameAsPhone",
                           "gender",
                         ]}
@@ -989,8 +1048,10 @@ export default function RegistrationExperience() {
                           cancelSection([
                             "fullName",
                             "email",
-                            "phone",
-                            "whatsapp",
+                            "phoneCountryCode",
+                            "phoneNumber",
+                            "whatsappCountryCode",
+                            "whatsappNumber",
                             "whatsappSameAsPhone",
                             "gender",
                           ])
