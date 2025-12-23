@@ -5,7 +5,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
 import confetti from "canvas-confetti";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Cloud, CloudOff } from "lucide-react";
 
 type ParticipationMode = "solo" | "team" | "";
 type AttendanceMode = "online" | "offline" | "";
@@ -353,50 +353,93 @@ export default function RegistrationExperience() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const [form, setForm] = useState<FormState>(() => {
-    const saved = loadSavedForm();
-    return {
-      fullName: saved.fullName ?? "",
-      email: saved.email ?? "",
-      phone: saved.phone ?? "",
-      whatsapp: saved.whatsapp ?? "",
-      whatsappSameAsPhone: saved.whatsappSameAsPhone ?? false,
-      gender: saved.gender ?? "",
+  const [form, setForm] = useState<FormState>(() => ({
+    fullName: "",
+    email: "",
+    phone: "",
+    whatsapp: "",
+    whatsappSameAsPhone: false,
+    gender: "",
 
-      university: saved.university ?? "",
-      degree: saved.degree ?? "",
-      graduationYear: saved.graduationYear ?? "",
-      rollId: saved.rollId ?? "",
-      collegeIdUrl: saved.collegeIdUrl ?? "",
-      resumeUrl: saved.resumeUrl ?? "",
-      linkedin: saved.linkedin ?? "",
-      github: saved.github ?? "",
-      portfolio: saved.portfolio ?? "",
+    university: "",
+    degree: "",
+    graduationYear: "",
+    rollId: "",
+    collegeIdUrl: "",
+    resumeUrl: "",
+    linkedin: "",
+    github: "",
+    portfolio: "",
 
-      participationMode: saved.participationMode ?? "",
-      teamName: saved.teamName ?? "",
-      teamSize: saved.teamSize ?? "",
-      teamMemberEmails: saved.teamMemberEmails ?? ["", "", ""],
+    participationMode: "",
+    teamName: "",
+    teamSize: "",
+    teamMemberEmails: ["", "", ""],
 
-      preferredTrack: saved.preferredTrack ?? "",
-      primarySkill: saved.primarySkill ?? "",
-      techStack: saved.techStack ?? [],
-      hasIdea: saved.hasIdea ?? null,
+    preferredTrack: "",
+    primarySkill: "",
+    techStack: [],
+    hasIdea: null,
 
-      attendanceMode: saved.attendanceMode ?? "",
-      city: saved.city ?? "",
-      dietary: saved.dietary ?? "",
-      needsAccommodation: saved.needsAccommodation ?? null,
+    attendanceMode: "",
+    city: "",
+    dietary: "",
+    needsAccommodation: null,
 
-      agreeTerms: saved.agreeTerms ?? false,
-      agreeConduct: saved.agreeConduct ?? false,
-      consentResumeShare: saved.consentResumeShare ?? false,
-      captcha: saved.captcha ?? false,
-    };
-  });
+    agreeTerms: false,
+    agreeConduct: false,
+    consentResumeShare: false,
+    captcha: false,
+  }));
+
+  function SaveButton({
+    keys,
+    className,
+  }: {
+    keys: Array<keyof FormState>;
+    className?: string;
+  }) {
+    const isSaved = keys.every((k) => {
+      const saved = savedSnapshot[k];
+      const current = form[k];
+      // simple deep-equality for arrays/objects via JSON
+      if (Array.isArray(current) || Array.isArray(saved) || (typeof current === 'object' && current !== null) || (typeof saved === 'object' && saved !== null)) {
+        try {
+          return JSON.stringify(saved) === JSON.stringify(current);
+        } catch {
+          return saved === current;
+        }
+      }
+      return saved === current;
+    });
+
+    return (
+      <PrimaryButton
+        onClick={() => {
+          const patch: Partial<FormState> = {};
+          keys.forEach((k) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (patch as any)[k] = form[k];
+          });
+          saveSection(patch);
+        }}
+      >
+        <span className="mr-3 inline-flex">
+          {isSaved ? <Cloud className="h-4 w-4" /> : <CloudOff className="h-4 w-4" />}
+        </span>
+        {isSaved ? "Saved" : "Save"}
+      </PrimaryButton>
+    );
+  }
 
   useEffect(() => {
-    setSavedSnapshot(loadSavedForm());
+    // Merge saved form from localStorage after mount to avoid hydration mismatch
+    if (typeof window === "undefined") return;
+    const saved = loadSavedForm();
+    if (saved) {
+      setForm((prev) => ({ ...prev, ...saved }));
+      setSavedSnapshot(saved);
+    }
   }, []);
 
   useEffect(() => {
@@ -673,6 +716,10 @@ export default function RegistrationExperience() {
                         <span className="text-white/90 font-bold">Documents Ready:</span> Keep your
 Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
                       </p>
+                      <p>
+                        <span className="text-white/90 font-bold">Documents Ready:</span> Keep your
+Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
+                      </p>
                     </div>
 
                     <div className="pt-2">
@@ -775,20 +822,16 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                     </Field>
 
                     <div className="pt-2 flex flex-wrap gap-3">
-                      <PrimaryButton
-                        onClick={() =>
-                          saveSection({
-                            fullName: form.fullName,
-                            email: form.email,
-                            phone: form.phone,
-                            whatsapp: form.whatsapp,
-                            whatsappSameAsPhone: form.whatsappSameAsPhone,
-                            gender: form.gender,
-                          })
-                        }
-                      >
-                        Save
-                      </PrimaryButton>
+                      <SaveButton
+                        keys={[
+                          "fullName",
+                          "email",
+                          "phone",
+                          "whatsapp",
+                          "whatsappSameAsPhone",
+                          "gender",
+                        ]}
+                      />
                       <SecondaryButton
                         onClick={() =>
                           cancelSection([
@@ -922,23 +965,19 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                     </div>
 
                     <div className="pt-2 flex flex-wrap gap-3">
-                      <PrimaryButton
-                        onClick={() =>
-                          saveSection({
-                            university: form.university,
-                            degree: form.degree,
-                            graduationYear: form.graduationYear,
-                            rollId: form.rollId,
-                            collegeIdUrl: form.collegeIdUrl,
-                            resumeUrl: form.resumeUrl,
-                            linkedin: form.linkedin,
-                            github: form.github,
-                            portfolio: form.portfolio,
-                          })
-                        }
-                      >
-                        Save
-                      </PrimaryButton>
+                      <SaveButton
+                        keys={[
+                          "university",
+                          "degree",
+                          "graduationYear",
+                          "rollId",
+                          "collegeIdUrl",
+                          "resumeUrl",
+                          "linkedin",
+                          "github",
+                          "portfolio",
+                        ]}
+                      />
                       <SecondaryButton
                         onClick={() =>
                           cancelSection([
@@ -1080,18 +1119,14 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                     ) : null}
 
                     <div className="pt-2 flex flex-wrap gap-3">
-                      <PrimaryButton
-                        onClick={() =>
-                          saveSection({
-                            participationMode: form.participationMode,
-                            teamName: form.teamName,
-                            teamSize: form.teamSize,
-                            teamMemberEmails: form.teamMemberEmails,
-                          })
-                        }
-                      >
-                        Save
-                      </PrimaryButton>
+                      <SaveButton
+                        keys={[
+                          "participationMode",
+                          "teamName",
+                          "teamSize",
+                          "teamMemberEmails",
+                        ]}
+                      />
                       <SecondaryButton
                         onClick={() =>
                           cancelSection([
@@ -1223,18 +1258,14 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                     </Field>
 
                     <div className="pt-2 flex flex-wrap gap-3">
-                      <PrimaryButton
-                        onClick={() =>
-                          saveSection({
-                            preferredTrack: form.preferredTrack,
-                            primarySkill: form.primarySkill,
-                            techStack: form.techStack,
-                            hasIdea: form.hasIdea,
-                          })
-                        }
-                      >
-                        Save
-                      </PrimaryButton>
+                      <SaveButton
+                        keys={[
+                          "preferredTrack",
+                          "primarySkill",
+                          "techStack",
+                          "hasIdea",
+                        ]}
+                      />
                       <SecondaryButton
                         onClick={() =>
                           cancelSection([
@@ -1346,18 +1377,14 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                     ) : null}
 
                     <div className="pt-2 flex flex-wrap gap-3">
-                      <PrimaryButton
-                        onClick={() =>
-                          saveSection({
-                            attendanceMode: form.attendanceMode,
-                            city: form.city,
-                            dietary: form.dietary,
-                            needsAccommodation: form.needsAccommodation,
-                          })
-                        }
-                      >
-                        Save
-                      </PrimaryButton>
+                      <SaveButton
+                        keys={[
+                          "attendanceMode",
+                          "city",
+                          "dietary",
+                          "needsAccommodation",
+                        ]}
+                      />
                       <SecondaryButton
                         onClick={() =>
                           cancelSection([
@@ -1468,18 +1495,9 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                         >
                           {isSubmitting ? 'SUBMITTING...' : 'COMPLETE REGISTRATION'}
                         </PrimaryButton>
-                        <SecondaryButton
-                          onClick={() =>
-                            saveSection({
-                              agreeTerms: form.agreeTerms,
-                              agreeConduct: form.agreeConduct,
-                              consentResumeShare: form.consentResumeShare,
-                              captcha: form.captcha,
-                            })
-                          }
-                        >
-                          Save
-                        </SecondaryButton>
+                        <SaveButton
+                          keys={["agreeTerms", "agreeConduct", "consentResumeShare", "captcha"]}
+                        />
                       </div>
                     </div>
                   ) : (
