@@ -297,7 +297,7 @@ export default function AIDemo() {
       ref={rootRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative w-full max-w-[780px] min-h-[460px] md:min-h-[480px]"
+      className="relative w-full max-w-full md:max-w-[780px] min-h-[460px] md:min-h-[480px]"
     >
       {/* Ambient glows */}
       <div className="pointer-events-none absolute -top-14 -left-14 h-56 w-56 rounded-full bg-orange-500/10 blur-[80px]" />

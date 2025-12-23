@@ -209,7 +209,7 @@ export default function SpaceDemo() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl overflow-hidden flex">
+    <div className="relative w-full max-w-full md:max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl overflow-hidden flex flex-col md:flex-row">
       {/* Ambient effects */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-pink-900/30" />
       <div className="pointer-events-none absolute -top-32 -right-32 h-64 w-64 rounded-full bg-purple-500/20 blur-[120px]" />
@@ -218,7 +218,7 @@ export default function SpaceDemo() {
       <StarField count={100} />
 
       {/* Sidebar Controls */}
-      <div className="w-2/5 border-r border-white/10 p-6 flex flex-col justify-between bg-white/[0.03] relative z-10">
+      <div className="w-full md:w-2/5 border-b md:border-b-0 md:border-r border-white/10 p-6 flex flex-col justify-between bg-white/[0.03] relative z-10">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="h-2 w-2 rounded-full bg-purple-400 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.8)]" />

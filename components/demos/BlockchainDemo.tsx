@@ -129,7 +129,7 @@ export default function BlockchainDemo() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[780px] min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
+    <div ref={containerRef} className="relative w-full max-w-full md:max-w-[780px] min-h-[520px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
         <div>
@@ -226,7 +226,7 @@ export default function BlockchainDemo() {
                 <p className="text-[10px] uppercase tracking-widest text-white/45">Event Stream</p>
                 <p className="text-[10px] uppercase tracking-widest text-white/30">live</p>
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-3">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {events.slice(-3).map((e) => (
                 <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
                     <p className="text-xs text-white/80">{e.title}</p>

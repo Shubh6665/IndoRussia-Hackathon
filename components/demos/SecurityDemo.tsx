@@ -58,7 +58,7 @@ export default function SecurityDemo() {
   }, [firewallActive, lockdown]);
 
   return (
-    <div className="relative w-full max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
+    <div className="relative w-full max-w-full md:max-w-[780px] min-h-[540px] md:min-h-[600px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
         <div className="flex items-center gap-3">
@@ -99,7 +99,7 @@ export default function SecurityDemo() {
       </div>
 
       {/* Traffic Visualizer */}
-      <div className="flex-1 relative p-6 grid grid-cols-[1.35fr_0.65fr] gap-4">
+      <div className="flex-1 relative p-5 md:p-6 grid grid-cols-1 md:grid-cols-[1.35fr_0.65fr] gap-4">
         <div className="flex flex-col gap-4 overflow-hidden">
           <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest">
             <span>Incoming</span>
@@ -156,7 +156,7 @@ export default function SecurityDemo() {
           </div>
 
           {/* Stats Footer */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white/5 rounded p-3 border border-white/5">
               <p className="text-[10px] text-white/40 uppercase">Threats Blocked</p>
               <p className="text-xl font-mono text-red-400">{stats.blocked}</p>

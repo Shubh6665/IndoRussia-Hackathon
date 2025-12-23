@@ -160,13 +160,13 @@ function Field({
 }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-start justify-between gap-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <label className="font-sans text-xs uppercase tracking-[0.25em] text-white/80">
           {label}
           {required && <span className="ml-1 text-red-500">*</span>}
         </label>
         {hint ? (
-          <p className="max-w-[28rem] text-right font-sans text-xs text-white/55">
+          <p className="max-w-[28rem] text-left font-sans text-xs text-white/55 sm:text-right">
             {hint}
           </p>
         ) : null}
@@ -781,7 +781,7 @@ export default function RegistrationExperience() {
 
       <div
         id="registration-container"
-        className="flex min-h-screen pt-32 transition-all duration-700 ease-out"
+        className="flex min-h-screen pt-24 sm:pt-32 transition-all duration-700 ease-out"
       >
         {/* Left rail */}
         <aside
@@ -838,8 +838,8 @@ export default function RegistrationExperience() {
 
         {/* Center stage */}
         <div className="relative flex flex-1 justify-center">
-          <div className="relative mx-auto w-full max-w-6xl px-6 pb-32">
-            <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 pb-24 sm:pb-32">
+            <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
               <div className="sticky top-0 h-screen w-full">
                 <SerialPage steps={steps} active={activeStep} />
                 <RightOrangeStrip />
@@ -847,7 +847,7 @@ export default function RegistrationExperience() {
             </div>
 
             <div className="relative z-10 mx-auto w-full max-w-4xl border border-white/10 bg-white/8">
-              <div ref={scrollerRef} className="w-full px-8 py-10">
+              <div ref={scrollerRef} className="w-full px-5 py-8 sm:px-8 sm:py-10">
                 {/* Step 0 */}
                 <section
                   ref={(el) => {

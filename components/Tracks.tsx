@@ -53,95 +53,151 @@ export default function Tracks() {
   useEffect(() => {
     if (!sectionRef.current || !triggerRef.current) return;
 
-    const tween = gsap.fromTo(
-      sectionRef.current,
-      { translateX: 0 },
-      {
-        translateX: "-300vw",
-        ease: "none",
-        duration: 1,
-        scrollTrigger: {
-          trigger: triggerRef.current,
-          start: "top top",
-          end: "+=4000",
-          scrub: 0.6,
-          pin: true,
-          anticipatePin: 1,
-          pinSpacing: true,
-          invalidateOnRefresh: true,
-        },
-      }
-    );
+    const mm = gsap.matchMedia();
 
-    // Re-measure right after mount so the pin start can't be based on a pre-font/pre-layout state.
-    ScrollTrigger.refresh();
+    mm.add("(min-width: 768px)", () => {
+      const tween = gsap.fromTo(
+        sectionRef.current,
+        { translateX: 0 },
+        {
+          translateX: "-300vw",
+          ease: "none",
+          duration: 1,
+          scrollTrigger: {
+            trigger: triggerRef.current,
+            start: "top top",
+            end: "+=4000",
+            scrub: 0.6,
+            pin: true,
+            anticipatePin: 1,
+            pinSpacing: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+
+      // Re-measure right after mount so the pin start can't be based on a pre-font/pre-layout state.
+      ScrollTrigger.refresh();
+
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
+    });
 
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      mm.revert();
     };
   }, []);
 
   return (
-    <section id="tracks" ref={triggerRef} className="overflow-hidden bg-[#050505] relative">
-      <div
-        ref={sectionRef}
-        className="h-screen w-[400vw] flex flex-row relative"
-      >
-        {tracks.map((track, index) => (
-          <div
-            key={index}
-            className="w-screen h-full flex flex-col md:flex-row justify-center items-center relative border-r border-white/10 px-4 md:px-20 gap-12"
-          >
-            <div className="absolute top-24 left-12 text-9xl font-serif text-white/5 font-bold z-0">
-              {track.id}
-            </div>
-            
-            <div className="relative z-10 max-w-xl flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] uppercase tracking-[0.28em] text-white/45">
-                  Track {track.id}
-                </span>
-                <span className="h-px w-10 bg-white/15" />
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/60">
-                  {track.badge}
-                </span>
-              </div>
-
-              <div className="relative mt-4">
-                <div className="pointer-events-none absolute -left-2 -top-8 text-[80px] md:text-[96px] font-serif font-bold text-white/[0.03] select-none">
-                  {track.title.split(" ")[0]}
+    <section id="tracks" ref={triggerRef} className="bg-[#050505] relative">
+      {/* Mobile: vertical stacked tracks */}
+      <div className="md:hidden px-6 pt-28 pb-24">
+        <div className="space-y-10">
+          {tracks.map((track) => (
+            <div
+              key={track.id}
+              className="rounded-3xl border border-white/10 bg-white/[0.03] overflow-hidden"
+            >
+              <div className="p-6 border-b border-white/10">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[11px] uppercase tracking-[0.28em] text-white/45">
+                    Track {track.id}
+                  </span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/60">
+                    {track.badge}
+                  </span>
                 </div>
+
                 <h3
-                  className={`relative text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r ${track.color} bg-clip-text text-transparent leading-[0.95]`}
+                  className={`mt-4 text-4xl font-serif font-bold bg-gradient-to-r ${track.color} bg-clip-text text-transparent leading-[1.05]`}
                 >
                   {track.title}
                 </h3>
+
+                <p className="mt-3 text-base font-sans text-white/60 leading-7">
+                  {track.desc}
+                </p>
               </div>
 
-              <p className="mt-6 text-lg md:text-xl font-sans text-white/55 leading-8">
-                {track.desc}
-              </p>
-
-              <p className="mt-6 text-xs uppercase tracking-[0.22em] text-white/35">
-                Scroll to reveal · interact on the right
-              </p>
-
-              <button className="mt-12 px-8 py-4 border border-white/20 rounded-full text-white uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">
-                Explore Track
-              </button>
+              <div className="p-5">
+                {track.component ? (
+                  <div className="w-full">
+                    {track.component}
+                  </div>
+                ) : (
+                  <div className="w-full h-64 border border-white/10 rounded-2xl flex items-center justify-center bg-white/5">
+                    <p className="text-white/30 uppercase tracking-widest">
+                      Interactive Demo Coming Soon
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Interactive Demo Column */}
-            <div className="relative z-10 w-full max-w-2xl flex items-center justify-center">
-               {track.component ? track.component : (
-                 <div className="w-full h-64 md:h-96 border border-white/10 rounded-2xl flex items-center justify-center bg-white/5 backdrop-blur-sm">
-                    <p className="text-white/30 uppercase tracking-widest">Interactive Demo Coming Soon</p>
-                 </div>
-               )}
+      {/* Desktop: pinned horizontal scroll */}
+      <div className="hidden md:block overflow-hidden">
+        <div ref={sectionRef} className="h-screen w-[400vw] flex flex-row relative">
+          {tracks.map((track, index) => (
+            <div
+              key={index}
+              className="w-screen h-full flex flex-col md:flex-row justify-center items-center relative border-r border-white/10 px-4 md:px-20 gap-12"
+            >
+              <div className="absolute top-24 left-12 text-9xl font-serif text-white/5 font-bold z-0">
+                {track.id}
+              </div>
+
+              <div className="relative z-10 max-w-xl flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] uppercase tracking-[0.28em] text-white/45">
+                    Track {track.id}
+                  </span>
+                  <span className="h-px w-10 bg-white/15" />
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/60">
+                    {track.badge}
+                  </span>
+                </div>
+
+                <div className="relative mt-4">
+                  <div className="pointer-events-none absolute -left-2 -top-8 text-[80px] md:text-[96px] font-serif font-bold text-white/[0.03] select-none">
+                    {track.title.split(" ")[0]}
+                  </div>
+                  <h3
+                    className={`relative text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r ${track.color} bg-clip-text text-transparent leading-[0.95]`}
+                  >
+                    {track.title}
+                  </h3>
+                </div>
+
+                <p className="mt-6 text-lg md:text-xl font-sans text-white/55 leading-8">
+                  {track.desc}
+                </p>
+
+                <p className="mt-6 text-xs uppercase tracking-[0.22em] text-white/35">
+                  Scroll to reveal · interact on the right
+                </p>
+
+                <button className="mt-12 px-8 py-4 border border-white/20 rounded-full text-white uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">
+                  Explore Track
+                </button>
+              </div>
+
+              <div className="relative z-10 w-full max-w-2xl flex items-center justify-center">
+                {track.component ? track.component : (
+                  <div className="w-full h-64 md:h-96 border border-white/10 rounded-2xl flex items-center justify-center bg-white/5 backdrop-blur-sm">
+                    <p className="text-white/30 uppercase tracking-widest">
+                      Interactive Demo Coming Soon
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
