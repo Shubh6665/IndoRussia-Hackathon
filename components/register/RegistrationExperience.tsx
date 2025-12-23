@@ -6,6 +6,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
 import confetti from "canvas-confetti";
 import { CheckCircle2, Cloud, CloudOff } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 type ParticipationMode = "solo" | "team" | "";
 type AttendanceMode = "online" | "offline" | "";
@@ -63,7 +64,7 @@ type FormState = {
   agreeTerms: boolean;
   agreeConduct: boolean;
   consentResumeShare: boolean;
-  captcha: boolean;
+  captchaToken: string | null;
 };
 
 const STORAGE_KEY = "irh:register:v1";
@@ -101,8 +102,8 @@ function defaultValueForKey(key: keyof FormState): FormState[keyof FormState] {
     case "agreeTerms":
     case "agreeConduct":
     case "consentResumeShare":
-    case "captcha":
       return false;
+    case "captchaToken":
     case "needsAccommodation":
     case "hasIdea":
       return null;
@@ -370,6 +371,7 @@ export default function RegistrationExperience() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const [form, setForm] = useState<FormState>(() => ({
     fullName: "",
@@ -407,7 +409,7 @@ export default function RegistrationExperience() {
     agreeTerms: false,
     agreeConduct: false,
     consentResumeShare: false,
-    captcha: false,
+    captchaToken: null,
   }));
 
   function SaveButton({
@@ -697,8 +699,8 @@ export default function RegistrationExperience() {
       return;
     }
 
-    // Require all agreements + captcha checkbox
-    if (!form.agreeTerms || !form.agreeConduct || !form.consentResumeShare || !form.captcha) {
+    // Require all agreements + captcha token
+    if (!form.agreeTerms || !form.agreeConduct || !form.consentResumeShare || !form.captchaToken) {
       scrollToStep(6);
       return;
     }
@@ -743,6 +745,9 @@ export default function RegistrationExperience() {
     } catch (error) {
       console.error('Registration submission error:', error);
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit registration');
+      // Reset captcha on error
+      recaptchaRef.current?.reset();
+      setForm((p) => ({ ...p, captchaToken: null }));
     } finally {
       setIsSubmitting(false);
     }
@@ -1660,18 +1665,18 @@ export default function RegistrationExperience() {
 
                       <div className="space-y-2">
                         <div className="font-sans text-xs uppercase tracking-[0.25em] text-white/60">
-                          Captcha
+                          Verification
                         </div>
-                        <label className="flex items-center justify-between gap-4 border border-white/15 bg-black/10 px-4 py-3 font-sans text-sm text-white/80">
-                          <span>I am not a robot <span className="text-red-500">*</span></span>
-                          <input
-                            type="checkbox"
-                            checked={form.captcha}
-                            onChange={(e) =>
-                              setForm((p) => ({ ...p, captcha: e.target.checked }))
+                        <div className="flex justify-center border border-white/15 bg-black/10 py-4">
+                          <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                            onChange={(token) =>
+                              setForm((p) => ({ ...p, captchaToken: token }))
                             }
+                            theme="dark"
                           />
-                        </label>
+                        </div>
                       </div>
 
                       {submitError && (
@@ -1690,7 +1695,7 @@ export default function RegistrationExperience() {
                           {isSubmitting ? 'SUBMITTING...' : 'COMPLETE REGISTRATION'}
                         </PrimaryButton>
                         <SaveButton
-                          keys={["agreeTerms", "agreeConduct", "consentResumeShare", "captcha"]}
+                          keys={["agreeTerms", "agreeConduct", "consentResumeShare", "captchaToken"]}
                         />
                       </div>
                     </div>

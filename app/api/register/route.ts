@@ -2,12 +2,43 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.json();
+    const body = await request.json();
+    const { captchaToken, ...formData } = body;
     
     // Validate required fields
     if (!formData.fullName || !formData.email || !formData.phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    if (!captchaToken) {
+      return NextResponse.json(
+        { error: 'Captcha verification required' },
+        { status: 400 }
+      );
+    }
+
+    // Verify reCAPTCHA
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+    if (!recaptchaSecret) {
+      console.error('RECAPTCHA_SECRET_KEY environment variable is not set');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const recaptchaResponse = await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${captchaToken}`,
+      { method: 'POST' }
+    );
+    const recaptchaData = await recaptchaResponse.json();
+
+    if (!recaptchaData.success) {
+      return NextResponse.json(
+        { error: 'Captcha verification failed' },
         { status: 400 }
       );
     }
