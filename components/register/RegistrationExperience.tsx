@@ -140,10 +140,14 @@ function SectionTitle({ step, title }: { step: number; title: string }) {
 function Field({
   label,
   hint,
+  required = false,
+  error = false,
   children,
 }: {
   label: string;
   hint?: string;
+  required?: boolean;
+  error?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -151,6 +155,7 @@ function Field({
       <div className="flex items-start justify-between gap-6">
         <label className="font-sans text-xs uppercase tracking-[0.25em] text-white/80">
           {label}
+          {required && <span className="ml-1 text-red-500">*</span>}
         </label>
         {hint ? (
           <p className="max-w-[28rem] text-right font-sans text-xs text-white/55">
@@ -163,12 +168,18 @@ function Field({
   );
 }
 
-function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+function TextInput(props: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
+  const { error, ...rest } = props;
   return (
     <input
-      {...props}
+      {...rest}
       className={
-        "w-full rounded-none border border-white/10 bg-white/[0.03] px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all placeholder:text-white/20 focus:border-white/30 focus:bg-white/[0.06] focus:ring-0"
+        "w-full rounded-none border " +
+        (error 
+          ? "border-red-500 bg-red-500/10" 
+          : "border-white/10 bg-white/[0.03]"
+        ) +
+        " px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all placeholder:text-white/20 focus:border-white/30 focus:bg-white/[0.06] focus:ring-0"
       }
     />
   );
@@ -199,12 +210,18 @@ function ToggleTag({
   );
 }
 
-function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
+function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement> & { error?: boolean }) {
+  const { error, ...rest } = props;
   return (
     <select
-      {...props}
+      {...rest}
       className={
-        "w-full rounded-none border border-white/10 bg-white/[0.03] px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all focus:border-white/30 focus:bg-white/[0.06] focus:ring-0 appearance-none"
+        "w-full rounded-none border " +
+        (error 
+          ? "border-red-500 bg-red-500/10" 
+          : "border-white/10 bg-white/[0.03]"
+        ) +
+        " px-4 py-4 font-sans text-sm text-white/90 outline-none transition-all focus:border-white/30 focus:bg-white/[0.06] focus:ring-0 appearance-none"
       }
     />
   );
@@ -352,6 +369,7 @@ export default function RegistrationExperience() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
 
   const [form, setForm] = useState<FormState>(() => ({
     fullName: "",
@@ -416,6 +434,12 @@ export default function RegistrationExperience() {
     return (
       <PrimaryButton
         onClick={() => {
+          // Validate current section before saving
+          const currentStepIndex = activeStep;
+          if (!validateSection(currentStepIndex)) {
+            return; // Don't save if validation fails
+          }
+          
           const patch: Partial<FormState> = {};
           keys.forEach((k) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -527,6 +551,97 @@ export default function RegistrationExperience() {
     };
   }, []);
 
+  const validateField = (fieldName: string, value: any): boolean => {
+    if (!value || value === "") {
+      setFieldErrors(prev => ({ ...prev, [fieldName]: true }));
+      return false;
+    } else {
+      setFieldErrors(prev => ({ ...prev, [fieldName]: false }));
+      return true;
+    }
+  };
+
+  const validateSection = (stepIndex: number): boolean => {
+    const errors: Record<string, boolean> = {};
+    
+    switch (stepIndex) {
+      case 1: // Personal Information
+        const personalFields = ['fullName', 'email', 'phone'];
+        personalFields.forEach(field => {
+          if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
+            errors[field] = true;
+          }
+        });
+        break;
+        
+      case 2: // Academic Details
+        const academicFields = ['university', 'degree', 'graduationYear', 'rollId'];
+        academicFields.forEach(field => {
+          if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
+            errors[field] = true;
+          }
+        });
+        break;
+        
+      case 3: // Team Participation
+        if (!form.participationMode) errors['participationMode'] = true;
+        if (form.participationMode === 'team') {
+          if (!form.teamName || form.teamName === "") errors['teamName'] = true;
+          if (!form.teamSize) errors['teamSize'] = true;
+        }
+        break;
+        
+      case 4: // Domain & Skills
+        if (!form.preferredTrack) errors['preferredTrack'] = true;
+        break;
+        
+      case 5: // Logistics
+        if (!form.attendanceMode) errors['attendanceMode'] = true;
+        if (!form.city || form.city === "") errors['city'] = true;
+        break;
+    }
+    
+    setFieldErrors(prev => ({ ...prev, ...errors }));
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateRequiredFields = () => {
+    const errors: Record<string, boolean> = {};
+    
+    // Always required fields
+    const alwaysRequired = ['fullName', 'email', 'phone', 'university', 'degree', 'graduationYear', 'rollId'];
+    
+    alwaysRequired.forEach(field => {
+      if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
+        errors[field] = true;
+      }
+    });
+    
+    // Participation mode required
+    if (!form.participationMode) errors['participationMode'] = true;
+    
+    // Team-specific required fields
+    if (form.participationMode === 'team') {
+      if (!form.teamName || form.teamName === "") errors['teamName'] = true;
+      if (!form.teamSize) errors['teamSize'] = true;
+      form.teamMemberEmails.forEach((email, idx) => {
+        if (email && email !== "" && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+          errors[`teamMemberEmail${idx}`] = true;
+        }
+      });
+    }
+    
+    // Skills and preferences required
+    if (!form.preferredTrack) errors['preferredTrack'] = true;
+    
+    // Logistics required
+    if (!form.attendanceMode) errors['attendanceMode'] = true;
+    if (!form.city || form.city === "") errors['city'] = true;
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const scrollToStep = (index: number) => {
     const el = sectionsRef.current[index];
     if (!el) return;
@@ -541,6 +656,14 @@ export default function RegistrationExperience() {
   const saveSection = (patch: Partial<FormState>) => {
     saveFormPatch(patch);
     setSavedSnapshot((prev) => ({ ...prev, ...patch }));
+    
+    // Scroll to next step after saving
+    const currentStepIndex = activeStep;
+    if (currentStepIndex < steps.length - 1) {
+      setTimeout(() => {
+        scrollToStep(currentStepIndex + 1);
+      }, 300);
+    }
   };
 
   const cancelSection = (keys: Array<keyof FormState>) => {
@@ -556,8 +679,26 @@ export default function RegistrationExperience() {
   };
 
   const handleSubmit = async () => {
-    // Minimal gating: require agreements + captcha checkbox
-    if (!form.agreeTerms || !form.agreeConduct || !form.captcha) {
+    // Validate all required fields first
+    if (!validateRequiredFields()) {
+      // Find first section with errors and scroll to it
+      const sectionsWithError = [
+        { step: 1, fields: ['fullName', 'email', 'phone'] },
+        { step: 2, fields: ['university', 'degree', 'graduationYear'] },
+        { step: 3, fields: form.participationMode === 'team' ? ['teamName', 'teamSize'] : [] },
+      ];
+      
+      for (const section of sectionsWithError) {
+        if (section.fields.some(field => fieldErrors[field])) {
+          scrollToStep(section.step);
+          break;
+        }
+      }
+      return;
+    }
+
+    // Require all agreements + captcha checkbox
+    if (!form.agreeTerms || !form.agreeConduct || !form.consentResumeShare || !form.captcha) {
       scrollToStep(6);
       return;
     }
@@ -714,17 +855,16 @@ export default function RegistrationExperience() {
                       </p>
                       <p>
                         <span className="text-white/90 font-bold">Documents Ready:</span> Keep your
-Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
+                        Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
                       </p>
                       <p>
-                        <span className="text-white/90 font-bold">Documents Ready:</span> Keep your
-Upload your Resume and College ID to Google Drive/Dropbox and have the shareable links ready.
+                        <span className="text-white/90 font-bold">Auto-Save Feature:</span> Your progress is automatically saved when you click the "Save" button in each section.<br></br>Required fields are marked with a red asterisk (*).
                       </p>
                     </div>
 
                     <div className="pt-2">
                       <PrimaryButton onClick={() => scrollToStep(1)}>
-                        I Understand, Let’s Start
+                        I Understand, Let's Start
                       </PrimaryButton>
                     </div>
                   </div>
@@ -742,34 +882,48 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                   <SectionTitle step={1} title="Personal Information (The basics)" />
 
                   <div className="grid gap-6">
-                    <Field label="Full Name">
+                    <Field label="Full Name" required error={fieldErrors.fullName}>
                       <TextInput
                         placeholder="John Doe"
                         autoComplete="name"
                         value={form.fullName}
-                        onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))}
+                        error={fieldErrors.fullName}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, fullName: e.target.value }));
+                          validateField('fullName', e.target.value);
+                        }}
                       />
                     </Field>
 
                     <Field
                       label="Email Address"
                       hint="Please use an active email. All OTPs and confirmations will be sent here."
+                      required
+                      error={fieldErrors.email}
                     >
                       <TextInput
                         placeholder="john@example.com"
                         type="email"
                         autoComplete="email"
                         value={form.email}
-                        onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                        error={fieldErrors.email}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, email: e.target.value }));
+                          validateField('email', e.target.value);
+                        }}
                       />
                     </Field>
 
-                    <Field label="Phone Number" hint="With Country Code +91 / +7 for Russia">
+                    <Field label="Phone Number" hint="With Country Code +91 / +7 for Russia" required error={fieldErrors.phone}>
                       <TextInput
                         placeholder="+91 9876543210"
                         inputMode="tel"
                         value={form.phone}
-                        onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                        error={fieldErrors.phone}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, phone: e.target.value }));
+                          validateField('phone', e.target.value);
+                        }}
                       />
                     </Field>
 
@@ -862,33 +1016,41 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                   <SectionTitle step={2} title="Academic & Professional Details" />
 
                   <div className="grid gap-6">
-                    <Field label="University / College Name">
+                    <Field label="University / College Name" required error={fieldErrors.university}>
                       <TextInput
                         placeholder="Your University / College"
                         value={form.university}
-                        onChange={(e) =>
-                          setForm((p) => ({ ...p, university: e.target.value }))
-                        }
+                        error={fieldErrors.university}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, university: e.target.value }));
+                          validateField('university', e.target.value);
+                        }}
                       />
                     </Field>
 
-                    <Field label="Course / Degree" hint="Example: B.Tech, B.E, B.Sc, BCA">
+                    <Field label="Course / Degree" hint="Example: B.Tech, B.E, B.Sc, BCA" required error={fieldErrors.degree}>
                       <TextInput
                         placeholder="B.Tech"
                         value={form.degree}
-                        onChange={(e) => setForm((p) => ({ ...p, degree: e.target.value }))}
+                        error={fieldErrors.degree}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, degree: e.target.value }));
+                          validateField('degree', e.target.value);
+                        }}
                       />
                     </Field>
 
-                    <Field label="Graduation Year">
+                    <Field label="Graduation Year" required error={fieldErrors.graduationYear}>
                       <SelectInput
                         value={form.graduationYear}
-                        onChange={(e) =>
+                        error={fieldErrors.graduationYear}
+                        onChange={(e) => {
                           setForm((p) => ({
                             ...p,
                             graduationYear: e.target.value as FormState["graduationYear"],
-                          }))
-                        }
+                          }));
+                          validateField('graduationYear', e.target.value);
+                        }}
                       >
                         <option value="" disabled>
                           Select
@@ -900,11 +1062,15 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                       </SelectInput>
                     </Field>
 
-                    <Field label="University Roll Number / ID">
+                    <Field label="University Roll Number / ID" required error={fieldErrors.rollId}>
                       <TextInput
                         placeholder="Roll Number / ID"
                         value={form.rollId}
-                        onChange={(e) => setForm((p) => ({ ...p, rollId: e.target.value }))}
+                        error={fieldErrors.rollId}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, rollId: e.target.value }));
+                          validateField('rollId', e.target.value);
+                        }}
                       />
                     </Field>
 
@@ -1011,7 +1177,7 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                   <SectionTitle step={3} title="Team Participation Mode" />
 
                   <div className="grid gap-6">
-                    <Field label="How are you participating?">
+                    <Field label="How are you participating?" required error={fieldErrors.participationMode}>
                       <div className="grid gap-3">
                         {(
                           [
@@ -1050,28 +1216,32 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
 
                     {form.participationMode === "team" ? (
                       <>
-                        <Field label="Team Name" hint="Make it cool!">
+                        <Field label="Team Name" hint="Make it cool!" required error={fieldErrors.teamName}>
                           <TextInput
                             placeholder="Team Name"
                             value={form.teamName}
-                            onChange={(e) =>
-                              setForm((p) => ({ ...p, teamName: e.target.value }))
-                            }
+                            error={fieldErrors.teamName}
+                            onChange={(e) => {
+                              setForm((p) => ({ ...p, teamName: e.target.value }));
+                              validateField('teamName', e.target.value);
+                            }}
                           />
                         </Field>
 
-                        <Field label="Team Size">
+                        <Field label="Team Size" required error={fieldErrors.teamSize}>
                           <SelectInput
                             value={form.teamSize === "" ? "" : String(form.teamSize)}
-                            onChange={(e) =>
+                            error={fieldErrors.teamSize}
+                            onChange={(e) => {
                               setForm((p) => ({
                                 ...p,
                                 teamSize:
                                   e.target.value === ""
                                     ? ""
                                     : (Number(e.target.value) as 2 | 3 | 4),
-                              }))
-                            }
+                              }));
+                              validateField('teamSize', e.target.value);
+                            }}
                           >
                             <option value="" disabled>
                               Select
@@ -1097,18 +1267,34 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                                 <Field
                                   key={idx}
                                   label={`Member ${idx + 2} Email ID`}
+                                  required
+                                  error={fieldErrors[`teamMemberEmail${idx}`]}
                                 >
                                   <TextInput
                                     placeholder="member@example.com"
                                     type="email"
                                     value={form.teamMemberEmails[idx] ?? ""}
-                                    onChange={(e) =>
+                                    error={fieldErrors[`teamMemberEmail${idx}`]}
+                                    onChange={(e) => {
                                       setForm((p) => {
                                         const next = [...p.teamMemberEmails];
                                         next[idx] = e.target.value;
                                         return { ...p, teamMemberEmails: next };
-                                      })
-                                    }
+                                      });
+                                      // Validate email format if not empty
+                                      if (e.target.value && e.target.value !== "") {
+                                        const isValid = e.target.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+                                        setFieldErrors(prev => ({ 
+                                          ...prev, 
+                                          [`teamMemberEmail${idx}`]: !isValid 
+                                        }));
+                                      } else {
+                                        setFieldErrors(prev => ({ 
+                                          ...prev, 
+                                          [`teamMemberEmail${idx}`]: false 
+                                        }));
+                                      }
+                                    }}
                                   />
                                 </Field>
                               )
@@ -1155,12 +1341,14 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                   <SectionTitle step={4} title="Domain & Skills (The Meat)" />
 
                   <div className="grid gap-6">
-                    <Field label="Preferred Track / Theme" hint="Select the problem statement you are interested in">
+                    <Field label="Preferred Track / Theme" hint="Select the problem statement you are interested in" required error={fieldErrors.preferredTrack}>
                       <SelectInput
                         value={form.preferredTrack}
-                        onChange={(e) =>
-                          setForm((p) => ({ ...p, preferredTrack: e.target.value as Track }))
-                        }
+                        error={fieldErrors.preferredTrack}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, preferredTrack: e.target.value as Track }));
+                          validateField('preferredTrack', e.target.value);
+                        }}
                       >
                         <option value="" disabled>
                           Select
@@ -1294,18 +1482,20 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                   <SectionTitle step={5} title="Logistics & Travel" />
 
                   <div className="grid gap-6">
-                    <Field label="Mode of Attendance">
+                    <Field label="Mode of Attendance" required error={fieldErrors.attendanceMode}>
                       <SelectInput
                         value={form.attendanceMode}
-                        onChange={(e) =>
+                        error={fieldErrors.attendanceMode}
+                        onChange={(e) => {
                           setForm((p) => ({
                             ...p,
                             attendanceMode: e.target.value as AttendanceMode,
                             ...(e.target.value === "online"
                               ? { dietary: "", needsAccommodation: null }
                               : null),
-                          }))
-                        }
+                          }));
+                          validateField('attendanceMode', e.target.value);
+                        }}
                       >
                         <option value="" disabled>
                           Select
@@ -1315,11 +1505,15 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                       </SelectInput>
                     </Field>
 
-                    <Field label="City of Residence">
+                    <Field label="City of Residence" required error={fieldErrors.city}>
                       <TextInput
                         placeholder="City"
                         value={form.city}
-                        onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
+                        error={fieldErrors.city}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, city: e.target.value }));
+                          validateField('city', e.target.value);
+                        }}
                       />
                     </Field>
 
@@ -1426,7 +1620,7 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                           />
                           <span>
                             I agree to the Terms &amp; Conditions and Privacy Policy of the
-                            Indo-Russian Hackathon 2025.
+                            Indo-Russian Hackathon 2025. <span className="text-red-500">*</span>
                           </span>
                         </label>
 
@@ -1441,7 +1635,7 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                           />
                           <span>
                             I agree to abide by the Code of Conduct (No harassment, original
-                            code policy).
+                            code policy). <span className="text-red-500">*</span>
                           </span>
                         </label>
 
@@ -1459,7 +1653,7 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                           />
                           <span>
                             I consent to share my resume with the event sponsors for hiring
-                            opportunities.
+                            opportunities. <span className="text-red-500">*</span>
                           </span>
                         </label>
                       </div>
@@ -1469,7 +1663,7 @@ Upload your Resume and College ID to Google Drive/Dropbox and have the shareable
                           Captcha
                         </div>
                         <label className="flex items-center justify-between gap-4 border border-white/15 bg-black/10 px-4 py-3 font-sans text-sm text-white/80">
-                          <span>I am not a robot</span>
+                          <span>I am not a robot <span className="text-red-500">*</span></span>
                           <input
                             type="checkbox"
                             checked={form.captcha}
