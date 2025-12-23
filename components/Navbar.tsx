@@ -39,6 +39,10 @@ export default function Navbar() {
 
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
+
+    // No-op if we are already on the register page
+    if (pathname === "/register") return;
+
     if (isTransitioning) return;
 
     setIsTransitioning(true);
