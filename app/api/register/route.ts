@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         ...formData,
+        captcha: true, // Mark as verified
         timestamp: new Date().toISOString(),
       }),
     });

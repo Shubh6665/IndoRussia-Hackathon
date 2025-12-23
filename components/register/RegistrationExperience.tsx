@@ -414,9 +414,11 @@ export default function RegistrationExperience() {
 
   function SaveButton({
     keys,
+    sectionIndex,
     className,
   }: {
     keys: Array<keyof FormState>;
+    sectionIndex?: number;
     className?: string;
   }) {
     const isSaved = keys.every((k) => {
@@ -436,10 +438,11 @@ export default function RegistrationExperience() {
     return (
       <PrimaryButton
         onClick={() => {
-          // Validate current section before saving
-          const currentStepIndex = activeStep;
-          if (!validateSection(currentStepIndex)) {
-            return; // Don't save if validation fails
+          // Validate specific section if index provided
+          if (sectionIndex !== undefined) {
+            if (!validateSection(sectionIndex)) {
+              return;
+            }
           }
           
           const patch: Partial<FormState> = {};
@@ -565,83 +568,72 @@ export default function RegistrationExperience() {
 
   const validateSection = (stepIndex: number): boolean => {
     const errors: Record<string, boolean> = {};
+    const fieldsToValidate: string[] = [];
     
     switch (stepIndex) {
       case 1: // Personal Information
-        const personalFields = ['fullName', 'email', 'phone'];
-        personalFields.forEach(field => {
-          if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
-            errors[field] = true;
-          }
-        });
+        fieldsToValidate.push('fullName', 'email', 'phone');
         break;
         
       case 2: // Academic Details
-        const academicFields = ['university', 'degree', 'graduationYear', 'rollId'];
-        academicFields.forEach(field => {
-          if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
-            errors[field] = true;
-          }
-        });
+        fieldsToValidate.push('university', 'degree', 'graduationYear', 'rollId');
         break;
         
       case 3: // Team Participation
-        if (!form.participationMode) errors['participationMode'] = true;
+        fieldsToValidate.push('participationMode');
         if (form.participationMode === 'team') {
-          if (!form.teamName || form.teamName === "") errors['teamName'] = true;
-          if (!form.teamSize) errors['teamSize'] = true;
+          fieldsToValidate.push('teamName', 'teamSize');
         }
         break;
         
       case 4: // Domain & Skills
-        if (!form.preferredTrack) errors['preferredTrack'] = true;
+        fieldsToValidate.push('preferredTrack');
         break;
         
       case 5: // Logistics
-        if (!form.attendanceMode) errors['attendanceMode'] = true;
-        if (!form.city || form.city === "") errors['city'] = true;
+        fieldsToValidate.push('attendanceMode', 'city');
+        break;
+        
+      case 6: // Agreements
+        fieldsToValidate.push('agreeTerms', 'agreeConduct', 'consentResumeShare', 'captchaToken');
         break;
     }
+
+    fieldsToValidate.forEach(field => {
+      const value = form[field as keyof FormState];
+      // Check for empty string, null, or false (for agreements)
+      if (value === "" || value === null || value === false) {
+        errors[field] = true;
+      } else {
+        errors[field] = false;
+      }
+    });
     
     setFieldErrors(prev => ({ ...prev, ...errors }));
-    return Object.keys(errors).length === 0;
+    return fieldsToValidate.every(field => !errors[field]);
   };
 
   const validateRequiredFields = () => {
     const errors: Record<string, boolean> = {};
     
     // Always required fields
-    const alwaysRequired = ['fullName', 'email', 'phone', 'university', 'degree', 'graduationYear', 'rollId'];
+    const alwaysRequired = ['fullName', 'email', 'phone', 'university', 'degree', 'graduationYear', 'rollId', 'participationMode', 'preferredTrack', 'attendanceMode', 'city', 'agreeTerms', 'agreeConduct', 'consentResumeShare', 'captchaToken'];
     
     alwaysRequired.forEach(field => {
-      if (!form[field as keyof FormState] || (form[field as keyof FormState] as string) === "") {
+      const value = form[field as keyof FormState];
+      if (value === "" || value === null || value === false) {
         errors[field] = true;
       }
     });
-    
-    // Participation mode required
-    if (!form.participationMode) errors['participationMode'] = true;
     
     // Team-specific required fields
     if (form.participationMode === 'team') {
       if (!form.teamName || form.teamName === "") errors['teamName'] = true;
       if (!form.teamSize) errors['teamSize'] = true;
-      form.teamMemberEmails.forEach((email, idx) => {
-        if (email && email !== "" && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-          errors[`teamMemberEmail${idx}`] = true;
-        }
-      });
     }
     
-    // Skills and preferences required
-    if (!form.preferredTrack) errors['preferredTrack'] = true;
-    
-    // Logistics required
-    if (!form.attendanceMode) errors['attendanceMode'] = true;
-    if (!form.city || form.city === "") errors['city'] = true;
-    
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return Object.keys(errors).filter(k => errors[k]).length === 0;
   };
 
   const scrollToStep = (index: number) => {
@@ -982,6 +974,7 @@ export default function RegistrationExperience() {
 
                     <div className="pt-2 flex flex-wrap gap-3">
                       <SaveButton
+                        sectionIndex={1}
                         keys={[
                           "fullName",
                           "email",
@@ -1137,6 +1130,7 @@ export default function RegistrationExperience() {
 
                     <div className="pt-2 flex flex-wrap gap-3">
                       <SaveButton
+                        sectionIndex={2}
                         keys={[
                           "university",
                           "degree",
@@ -1311,6 +1305,7 @@ export default function RegistrationExperience() {
 
                     <div className="pt-2 flex flex-wrap gap-3">
                       <SaveButton
+                        sectionIndex={3}
                         keys={[
                           "participationMode",
                           "teamName",
@@ -1343,7 +1338,7 @@ export default function RegistrationExperience() {
                   }}
                   className="mt-12 space-y-8"
                 >
-                  <SectionTitle step={4} title="Domain & Skills (The Meat)" />
+                  <SectionTitle step={4} title="Domain & Skills" />
 
                   <div className="grid gap-6">
                     <Field label="Preferred Track / Theme" hint="Select the problem statement you are interested in" required error={fieldErrors.preferredTrack}>
@@ -1452,6 +1447,7 @@ export default function RegistrationExperience() {
 
                     <div className="pt-2 flex flex-wrap gap-3">
                       <SaveButton
+                        sectionIndex={4}
                         keys={[
                           "preferredTrack",
                           "primarySkill",
@@ -1577,6 +1573,7 @@ export default function RegistrationExperience() {
 
                     <div className="pt-2 flex flex-wrap gap-3">
                       <SaveButton
+                        sectionIndex={5}
                         keys={[
                           "attendanceMode",
                           "city",
@@ -1695,6 +1692,7 @@ export default function RegistrationExperience() {
                           {isSubmitting ? 'SUBMITTING...' : 'COMPLETE REGISTRATION'}
                         </PrimaryButton>
                         <SaveButton
+                          sectionIndex={6}
                           keys={["agreeTerms", "agreeConduct", "consentResumeShare", "captchaToken"]}
                         />
                       </div>
