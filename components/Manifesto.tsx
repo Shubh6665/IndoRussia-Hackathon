@@ -118,7 +118,7 @@ export default function Manifesto() {
           {/* BRICS Flags */}
           <div className="mt-8 flex items-center gap-4 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
             <span className="text-xs uppercase tracking-widest text-white/40 mr-2 font-bold">Member Nations</span>
-            <div className="flex gap-3 text-2xl grayscale hover:grayscale-0 transition-all duration-300 cursor-default">
+            <div className="flex gap-3 text-2xl cursor-default">
               <span title="Brazil">🇧🇷</span>
               <span title="Russia">🇷🇺</span>
               <span title="India">🇮🇳</span>

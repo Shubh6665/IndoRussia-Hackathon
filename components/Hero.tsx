@@ -226,10 +226,10 @@ export default function Hero() {
         </Link>
       </div>
       
-      <div className="absolute bottom-12 right-8 md:right-12 z-20">
-         <div className="animate-bounce text-white/50 text-xs uppercase tracking-widest">
-            Scroll to Explore
-         </div>
+      <div className="hidden md:block absolute bottom-12 right-8 md:right-12 z-20">
+        <div className="animate-bounce text-white/50 text-xs uppercase tracking-widest">
+          Scroll to Explore
+        </div>
       </div>
     </section>
   );

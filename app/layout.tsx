@@ -8,12 +8,14 @@ const bodoni = Bodoni_Moda({
   subsets: ["latin"],
   variable: "--font-bodoni",
   display: "swap",
+  fallback: ["Georgia", "serif"],
 });
 
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
