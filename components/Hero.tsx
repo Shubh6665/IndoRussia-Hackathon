@@ -89,50 +89,78 @@ export default function Hero() {
             </span>
           </div>
         </h1>
+      </div>
 
-        {/* Mobile Logos (compact + clean) */}
-        <div className="mt-6 md:hidden">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
-            <Link
-              href="/"
-              aria-label="Hackathon Home"
-              className="relative w-12 h-12 shrink-0"
-            >
-              <Image src="/hackathon.png" alt="Hackathon" fill className="object-contain" />
-            </Link>
+      {/* Mobile Logos (crisp + readable) */}
+      <div className="relative z-30 mt-6 md:hidden mix-blend-normal">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-full border border-white/30 bg-white/10 backdrop-blur-lg">
+          <Link
+            href="/"
+            aria-label="Hackathon Home"
+            className="relative w-12 h-12 shrink-0"
+          >
+            <Image
+              src="/hackathon.png"
+              alt="Hackathon"
+              fill
+              sizes="48px"
+              className="object-contain"
+              priority
+            />
+          </Link>
 
-            <div className="h-8 w-px bg-white/20" />
+          <div className="h-8 w-px bg-white/25" />
 
-            <Link
-              href="https://www.bricsforum.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="BRICS Forum"
-              className="relative w-8 h-8 opacity-90"
-            >
-              <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
-            </Link>
+          <Link
+            href="https://www.bricsforum.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="BRICS Forum"
+            className="relative w-9 h-9"
+          >
+            <Image
+              src="/brics.webp"
+              alt="BRICS"
+              fill
+              sizes="36px"
+              className="object-contain"
+              priority
+            />
+          </Link>
 
-            <Link
-              href="https://go-brics.org/eng"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Go BRICS"
-              className="relative w-8 h-8 opacity-90"
-            >
-              <Image src="/gobrics.png" alt="GoBRICS" fill className="object-contain" />
-            </Link>
+          <Link
+            href="https://go-brics.org/eng"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Go BRICS"
+            className="relative w-9 h-9"
+          >
+            <Image
+              src="/gobrics.png"
+              alt="GoBRICS"
+              fill
+              sizes="36px"
+              className="object-contain"
+              priority
+            />
+          </Link>
 
-            <Link
-              href="https://www.rgipt.ac.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="RGIPT"
-              className="relative w-8 h-8 opacity-90"
-            >
-              <Image src="/rgipt.png" alt="RGIPT" fill className="object-contain" />
-            </Link>
-          </div>
+          <Link
+            href="https://www.rgipt.ac.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="RGIPT"
+            className="relative w-9 h-9"
+          >
+            <Image
+              src="/rgipt.png"
+              alt="RGIPT"
+              fill
+              sizes="36px"
+              className="object-contain"
+              priority
+            />
+          </Link>
         </div>
       </div>
 
