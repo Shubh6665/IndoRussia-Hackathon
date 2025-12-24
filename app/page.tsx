@@ -64,10 +64,6 @@ export default function Home() {
             {/* Address & Details */}
             <VenueDetails />
           </div>
-
-          <p className="mt-8 text-xs text-white/35 leading-6 text-center">
-            Update the map embed URL and address with your actual venue details before launch.
-          </p>
         </div>
       </section>
     </main>
