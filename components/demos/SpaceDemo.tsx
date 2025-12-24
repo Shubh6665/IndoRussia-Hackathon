@@ -62,6 +62,7 @@ export default function SpaceDemo() {
   const sweepRef = useRef<HTMLDivElement>(null);
   const pingRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
+  const nextIdRef = useRef(1003); // Keep track of next available ID
 
   const [scanning, setScanning] = useState(true);
   const [targets, setTargets] = useState<{ x: number; y: number; id: number; type: string }[]>([
@@ -139,7 +140,7 @@ export default function SpaceDemo() {
 
     const interval = window.setInterval(() => {
       const newTarget = {
-        id: 1000 + Math.floor(Math.random() * 9000),
+        id: nextIdRef.current++,
         x: 15 + Math.random() * 70,
         y: 15 + Math.random() * 70,
         type: Math.random() > 0.7 ? "DEB" : "SAT",
@@ -165,7 +166,7 @@ export default function SpaceDemo() {
     const x = ((clientX - rect.left) / rect.width) * 100;
     const y = ((clientY - rect.top) / rect.height) * 100;
     const newTarget = {
-      id: 2000 + Date.now() % 1000,
+      id: nextIdRef.current++,
       x: clamp(x, 6, 94),
       y: clamp(y, 6, 94),
       type: "MAN",
