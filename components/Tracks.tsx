@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/*
 import AIDemo from "@/components/demos/AIDemo";
 import BlockchainDemo from "@/components/demos/BlockchainDemo";
 import SpaceDemo from "@/components/demos/SpaceDemo";
@@ -45,11 +46,13 @@ const tracks = [
     component: <SecurityDemo />,
   },
 ];
+*/
 
 export default function Tracks() {
   const sectionRef = useRef(null);
   const triggerRef = useRef(null);
 
+  /*
   useEffect(() => {
     if (!sectionRef.current || !triggerRef.current) return;
 
@@ -89,10 +92,27 @@ export default function Tracks() {
       mm.revert();
     };
   }, []);
+  */
 
   return (
     <section id="tracks" ref={triggerRef} className="bg-[#050505] relative">
-      {/* Mobile: vertical stacked tracks */}
+      {/* Problem Statement Coming Soon Section */}
+      <div className="py-32 px-6 flex flex-col items-center justify-center min-h-[100vh] border-t border-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-white/45 mb-4">Hackathon Tracks</p>
+          <h2 className="text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent mb-8">
+            Problem Statements
+          </h2>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <p className="text-lg md:text-xl font-sans text-white/60">
+              Will be released soon
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: vertical stacked tracks - Commented Out
       <div className="md:hidden px-6 pt-28 pb-24">
         <div className="space-y-10">
           {tracks.map((track) => (
@@ -138,8 +158,9 @@ export default function Tracks() {
           ))}
         </div>
       </div>
+      */}
 
-      {/* Desktop: pinned horizontal scroll */}
+      {/* Desktop: pinned horizontal scroll - Commented Out
       <div className="hidden md:block overflow-hidden">
         <div ref={sectionRef} className="h-screen w-[400vw] flex flex-row relative">
           {tracks.map((track, index) => (
@@ -199,6 +220,7 @@ export default function Tracks() {
           ))}
         </div>
       </div>
+      */}
     </section>
   );
 }

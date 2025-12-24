@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import EventDetails from "@/components/EventDetails";
 import Manifesto from "@/components/Manifesto";
-// import Tracks from "@/components/Tracks";
+import Tracks from "@/components/Tracks";
 import { TiltCard } from "@/components/ui/tilt-card";
 import VenueDetails from "@/components/VenueDetails";
 
@@ -14,7 +14,7 @@ export default function Home() {
       <Hero />
       <Manifesto />
       <EventDetails />
-      {/* <Tracks /> */}
+       <Tracks /> 
       
       <section className="py-24 px-6 md:px-20">
         <div className="max-w-6xl mx-auto">
