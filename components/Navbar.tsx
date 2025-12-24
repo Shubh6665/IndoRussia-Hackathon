@@ -110,14 +110,11 @@ export default function Navbar() {
         ref={navRef}
         className="fixed top-0 left-0 w-full px-8 py-6 grid grid-cols-3 items-center z-[10001] mix-blend-difference text-white"
       >
-        {/* Left spacer (keeps center aligned) */}
-        <div className="hidden md:block" />
-
-        {/* Center: Hamburger (Mobile) / Navigation Links (Desktop) */}
-        <div className="flex items-center justify-center">
+        {/* Left: Hamburger (Mobile) */}
+        <div className="flex items-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-center justify-center mr-auto"
+            className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-center justify-center"
             aria-label="Toggle menu"
           >
             <span
@@ -136,29 +133,30 @@ export default function Navbar() {
               }`}
             />
           </button>
+        </div>
 
-          <div
-            className={
-              "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
-              (isHomeScrolled
-                ? "px-6 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md"
-                : "px-0 py-0 bg-transparent border-transparent")
-            }
-          >
-            {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
-              const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
-              return (
-                <Link key={item} href={href} className="relative group overflow-hidden">
-                  <span className="block transition-transform duration-500 group-hover:-translate-y-full">
-                    {item}
-                  </span>
-                  <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-500 group-hover:translate-y-0 text-gray-400">
-                    {item}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+        {/* Center: Navigation Links (Desktop) */}
+        <div
+          className={
+            "hidden md:flex justify-center items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
+            (isHomeScrolled
+              ? "px-6 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md"
+              : "px-0 py-0 bg-transparent border-transparent")
+          }
+        >
+          {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
+            const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
+            return (
+              <Link key={item} href={href} className="relative group overflow-hidden">
+                <span className="block transition-transform duration-500 group-hover:-translate-y-full">
+                  {item}
+                </span>
+                <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-500 group-hover:translate-y-0 text-gray-400">
+                  {item}
+                </span>
+              </Link>
+            );
+          })}
         </div>
 
         {/* Right: Register Button (Desktop) */}

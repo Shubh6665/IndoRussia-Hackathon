@@ -356,6 +356,7 @@ function RightOrangeStrip() {
 }
 
 export default function RegistrationExperience() {
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const sectionsRef = useRef<Array<HTMLElement | null>>([]);
 
@@ -1726,14 +1727,21 @@ export default function RegistrationExperience() {
                           Verification
                         </div>
                         <div className="flex justify-center border border-white/15 bg-black/10 py-4">
-                          <ReCAPTCHA
-                            ref={recaptchaRef}
-                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                            onChange={(token) =>
-                              setForm((p) => ({ ...p, captchaToken: token }))
-                            }
-                            theme="dark"
-                          />
+                          {recaptchaSiteKey ? (
+                            <ReCAPTCHA
+                              ref={recaptchaRef}
+                              sitekey={recaptchaSiteKey}
+                              onChange={(token) =>
+                                setForm((p) => ({ ...p, captchaToken: token }))
+                              }
+                              theme="dark"
+                            />
+                          ) : (
+                            <div className="font-sans text-xs text-white/70 text-center px-4">
+                              Verification is temporarily unavailable (missing
+                              <span className="text-white/90"> NEXT_PUBLIC_RECAPTCHA_SITE_KEY</span>).
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1748,7 +1756,7 @@ export default function RegistrationExperience() {
                       <div className="flex flex-wrap gap-3">
                         <PrimaryButton 
                           onClick={handleSubmit}
-                          disabled={isSubmitting}
+                          disabled={isSubmitting || !recaptchaSiteKey}
                         >
                           {isSubmitting ? 'SUBMITTING...' : 'COMPLETE REGISTRATION'}
                         </PrimaryButton>
