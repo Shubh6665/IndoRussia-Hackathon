@@ -6,11 +6,13 @@ import Tracks from "@/components/Tracks";
 import { TiltCard } from "@/components/ui/tilt-card";
 import VenueDetails from "@/components/VenueDetails";
 
+
 export default function Home() {
   return (
     <main className="relative w-full min-h-screen bg-[#050505] text-white">
       <div className="noise-bg" />
       <Navbar />
+
       <Hero />
       <Manifesto />
       <EventDetails />

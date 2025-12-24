@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -87,6 +89,51 @@ export default function Hero() {
             </span>
           </div>
         </h1>
+
+        {/* Mobile Logos (compact + clean) */}
+        <div className="mt-6 md:hidden">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
+            <Link
+              href="/"
+              aria-label="Hackathon Home"
+              className="relative w-12 h-12 shrink-0"
+            >
+              <Image src="/hackathon.png" alt="Hackathon" fill className="object-contain" />
+            </Link>
+
+            <div className="h-8 w-px bg-white/20" />
+
+            <Link
+              href="https://www.bricsforum.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="BRICS Forum"
+              className="relative w-8 h-8 opacity-90"
+            >
+              <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
+            </Link>
+
+            <Link
+              href="https://go-brics.org/eng"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Go BRICS"
+              className="relative w-8 h-8 opacity-90"
+            >
+              <Image src="/gobrics.png" alt="GoBRICS" fill className="object-contain" />
+            </Link>
+
+            <Link
+              href="https://www.rgipt.ac.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="RGIPT"
+              className="relative w-8 h-8 opacity-90"
+            >
+              <Image src="/rgipt.png" alt="RGIPT" fill className="object-contain" />
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div
@@ -97,6 +144,58 @@ export default function Hero() {
           Indo-Russian Bilateral Energy Hackathon <br />
           <span className="text-white font-bold">Hackathon 2025</span>
         </p>
+      </div>
+
+      {/* Logos - Right Side Vertical Stack (Desktop) */}
+      <div className="hidden md:flex absolute z-30 flex-col items-center gap-6 right-8 top-1/2 -translate-y-1/2">
+        {/* Hackathon Logo (Main) */}
+        <Link
+          href="/"
+          className="relative w-12 h-12 md:w-24 md:h-24 hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+        >
+          <Image
+            src="/hackathon.png"
+            alt="Hackathon"
+            fill
+            className="object-contain"
+          />
+        </Link>
+
+        {/* Divider */}
+        <div className="w-px h-8 md:h-12 bg-gradient-to-b from-transparent via-white/30 to-transparent my-1" />
+
+        {/* Partner Logos */}
+        <Link
+          href="https://www.bricsforum.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative w-8 h-8 md:w-14 md:h-14 opacity-80 hover:opacity-100 hover:scale-110 transition-all duration-300"
+        >
+          <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
+        </Link>
+
+        <Link
+          href="https://go-brics.org/eng"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative w-8 h-8 md:w-14 md:h-14 opacity-80 hover:opacity-100 hover:scale-110 transition-all duration-300"
+        >
+          <Image
+            src="/gobrics.png"
+            alt="GoBRICS"
+            fill
+            className="object-contain"
+          />
+        </Link>
+
+        <Link
+          href="https://www.rgipt.ac.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative w-8 h-8 md:w-14 md:h-14 opacity-80 hover:opacity-100 hover:scale-110 transition-all duration-300"
+        >
+          <Image src="/rgipt.png" alt="RGIPT" fill className="object-contain" />
+        </Link>
       </div>
       
       <div className="absolute bottom-12 right-8 md:right-12 z-20">

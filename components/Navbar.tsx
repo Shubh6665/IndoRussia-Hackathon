@@ -6,8 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
-import Image from "next/image";
-
 export default function Navbar() {
   const navRef = useRef(null);
   const router = useRouter();
@@ -110,14 +108,16 @@ export default function Navbar() {
       />
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 w-full px-8 py-6 flex justify-between items-center z-[10001] mix-blend-difference text-white"
+        className="fixed top-0 left-0 w-full px-8 py-6 grid grid-cols-3 items-center z-[10001] mix-blend-difference text-white"
       >
-        {/* Left: Hamburger Menu (Mobile) / Navigation Links (Desktop) */}
-        <div className="flex items-center gap-4">
-          {/* Hamburger Menu Button */}
+        {/* Left spacer (keeps center aligned) */}
+        <div className="hidden md:block" />
+
+        {/* Center: Hamburger (Mobile) / Navigation Links (Desktop) */}
+        <div className="flex items-center justify-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-start"
+            className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-center justify-center mr-auto"
             aria-label="Toggle menu"
           >
             <span
@@ -137,7 +137,6 @@ export default function Navbar() {
             />
           </button>
 
-          {/* Desktop Navigation Links */}
           <div
             className={
               "hidden md:flex items-center gap-8 font-sans text-sm uppercase tracking-widest transition-all duration-300 " +
@@ -149,11 +148,7 @@ export default function Navbar() {
             {["Manifesto", "Details", "Tracks", "Sponsors"].map((item) => {
               const href = item === "Sponsors" ? "/sponsors" : `/#${item.toLowerCase()}`;
               return (
-                <Link
-                  key={item}
-                  href={href}
-                  className="relative group overflow-hidden"
-                >
+                <Link key={item} href={href} className="relative group overflow-hidden">
                   <span className="block transition-transform duration-500 group-hover:-translate-y-full">
                     {item}
                   </span>
@@ -166,24 +161,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center: Logos */}
-        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 md:gap-6 ${isMenuOpen ? 'hidden md:flex' : 'flex'}`}>
-          <div className="relative w-10 h-10 md:w-12 md:h-12 opacity-90 hover:opacity-100 transition-opacity">
-            <Image src="/brics.webp" alt="BRICS" fill className="object-contain" />
-          </div>
-          <div className="relative w-14 h-14 md:w-20 md:h-20 hover:scale-105 transition-transform">
-            <Image src="/hackathon.png" alt="Hackathon" fill className="object-contain" />
-          </div>
-          <div className="relative w-10 h-10 md:w-12 md:h-12 opacity-90 hover:opacity-100 transition-opacity">
-            <Image src="/rgipt.png" alt="RGIPT" fill className="object-contain" />
-          </div>
-        </div>
-
         {/* Right: Register Button (Desktop) */}
         <Link
           href="/register"
           onClick={handleRegisterClick}
-          className="hidden md:inline-block shrink-0 border border-white/20 px-5 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 whitespace-nowrap"
+          className="hidden md:inline-block justify-self-end shrink-0 border border-white/20 px-5 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 whitespace-nowrap"
         >
           Register
         </Link>
