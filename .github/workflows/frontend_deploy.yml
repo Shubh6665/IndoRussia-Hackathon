@@ -1,0 +1,25 @@
+name: Deploying Frontend
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH to DigitalOcean and Deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          port: ${{ secrets.DO_SSH_PORT }}
+          script: |
+            cd ./IndoRussia-Hackathon
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart all
+        
