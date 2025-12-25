@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import EventDetails from "@/components/EventDetails";
 import Manifesto from "@/components/Manifesto";
 import PDFViewer from "@/components/PDFViewer";
+import RGIPTViewer from "@/components/RGIPTViewer";
 import Tracks from "@/components/Tracks";
 import { TiltCard } from "@/components/ui/tilt-card";
 import VenueDetails from "@/components/VenueDetails";
@@ -16,7 +17,8 @@ export default function Home() {
 
       <Hero />
       <Manifesto />
-      <PDFViewer />
+      <PDFViewer src="russia.pdf" />
+      <RGIPTViewer src="RGIPT_India.pdf" />
       <EventDetails />
        <Tracks /> 
       
