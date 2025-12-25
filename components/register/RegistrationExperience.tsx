@@ -1796,7 +1796,7 @@ export default function RegistrationExperience() {
 
             <div className="mt-6 flex justify-center gap-3 font-sans text-[10px] uppercase tracking-[0.25em] text-white/45">
               <span className="inline-block h-[1px] w-10 bg-white/15" />
-              <span>Scroll inside the sheet</span>
+              <span>The END!</span>
               <span className="inline-block h-[1px] w-10 bg-white/15" />
             </div>
           </div>
