@@ -96,7 +96,7 @@ export default function Manifesto() {
             <TiltCard className="relative p-1 rounded-full md:rounded-[2rem] bg-black overflow-hidden">
               <div className="relative w-[200px] h-[200px] md:w-[380px] md:h-[480px] rounded-full md:rounded-[1.8rem] overflow-hidden bg-black/50 transition-all duration-700 ease-in-out">
                 <Image
-                  src="/Purnima.png"
+                  src="/purnima_mam.jpeg"
                   alt="Ms. Purnima Anand"
                   fill
                   className="object-cover object-top"
