@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import EventDetails from "@/components/EventDetails";
 import Manifesto from "@/components/Manifesto";
+import SummitHighlight from "@/components/SummitHighlight";
 import PDFViewer from "@/components/PDFViewer";
 import RGIPTViewer from "@/components/RGIPTViewer";
 import Tracks from "@/components/Tracks";
@@ -17,6 +18,7 @@ export default function Home() {
 
       <Hero />
       <Manifesto />
+      <SummitHighlight />
       <PDFViewer src="russia.pdf" />
       <RGIPTViewer src="RGIPT_India.pdf" />
       <EventDetails />
