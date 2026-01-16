@@ -21,6 +21,10 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Indo-Russia Hackathon 2025",
   description: "A fusion of innovation and diplomacy.",
+  icons: {
+    icon: "/hackathon.png",
+    apple: "/hackathon.png",
+  },
 };
 
 export default function RootLayout({
