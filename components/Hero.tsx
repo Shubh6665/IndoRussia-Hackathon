@@ -104,7 +104,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center mix-blend-overlay opacity-500">
-        <h1 className="text-[14vw] md:text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
+        <h1 className="text-[17vw] md:text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
           <div className="overflow-hidden">
             <span className="relative inline-block">
               <span aria-hidden className="HeroTitleOutline block">
