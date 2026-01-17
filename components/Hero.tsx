@@ -104,15 +104,31 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center mix-blend-overlay opacity-500">
-        <h1 className="text-[18vw] md:text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
+        <h1 className="text-[14vw] md:text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
           <div className="overflow-hidden">
-            <span ref={textRef1} className="block bg-gradient-to-r from-orange-200 to-white bg-clip-text text-transparent">
-              Energy
+            <span className="relative inline-block">
+              <span aria-hidden className="HeroTitleOutline block">
+                Energy
+              </span>
+              <span
+                ref={textRef1}
+                className="block bg-gradient-to-r from-orange-200 to-white bg-clip-text text-transparent"
+              >
+                Energy
+              </span>
             </span>
           </div>
           <div className="overflow-hidden">
-            <span ref={textRef2} className="block bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-              O-Thon
+            <span className="relative inline-block">
+              <span aria-hidden className="HeroTitleOutline block">
+                O-Thon
+              </span>
+              <span
+                ref={textRef2}
+                className="block bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent"
+              >
+                O-Thon
+              </span>
             </span>
           </div>
         </h1>
@@ -286,6 +302,15 @@ export default function Hero() {
       </div>
 
       <style jsx>{`
+        .HeroTitleOutline {
+          position: absolute;
+          inset: 0;
+          color: transparent;
+          -webkit-text-stroke: 0.7px rgba(255, 255, 255, 0.26);
+          text-shadow: 0 0 18px rgba(255, 255, 255, 0.08);
+          pointer-events: none;
+          transform: translateZ(0);
+        }
         .LogoPill {
           border: 1px solid rgba(255, 255, 255, 0.14);
           background: rgba(255, 255, 255, 0.06);
