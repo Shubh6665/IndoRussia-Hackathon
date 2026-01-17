@@ -10,6 +10,7 @@ type SponsorItem = {
   name: string;
   logoSrc: string;
   invert?: boolean;
+  size?: "normal" | "featured";
 };
 
 type SponsorCell = SponsorItem | null;
@@ -17,52 +18,72 @@ type SponsorCell = SponsorItem | null;
 const COLS = 7;
 const ROWS = 4;
 
-// NOTE: These are safe placeholder logos.
-// Replace the files in /public/sponsors/ with your real sponsor logos (PNG/SVG),
-// or update the `logoSrc` paths here.
+// Patterned layout (intentional gaps):
+// Top row: BRICS — Hackathon — GoBRICS
+// Second row: Dion + RGIPT
+// Then Russian partner universities
 const sponsors: SponsorCell[] = [
-  // 7 columns x 4 rows (28 cells). Only 12 sponsors; rest are intentional gaps.
   // Row 1
-  { name: "Sponsor 01", logoSrc: "/sponsors/logo-01.svg" },
-  { name: "Sponsor 02", logoSrc: "/sponsors/logo-02.svg" },
-  { name: "Sponsor 03", logoSrc: "/sponsors/logo-03.svg" },
-  { name: "Sponsor 04", logoSrc: "/sponsors/logo-04.svg" },
-  { name: "Sponsor 05", logoSrc: "/sponsors/logo-05.svg" },
   null,
-  { name: "Sponsor 06", logoSrc: "/sponsors/logo-06.svg" },
+  { name: "BRICS Forum", logoSrc: "/brics.webp", size: "featured" },
+  null,
+  { name: "Hackathon", logoSrc: "/hackathon.png", size: "featured" },
+  null,
+  { name: "GoBRICS", logoSrc: "/gobrics.png", size: "featured" },
+  null,
 
   // Row 2
   null,
-  { name: "Sponsor 07", logoSrc: "/sponsors/logo-07.svg" },
   null,
-  { name: "Sponsor 08", logoSrc: "/sponsors/logo-08.svg" },
-  { name: "Sponsor 09", logoSrc: "/sponsors/logo-09.svg" },
+  { name: "Dion", logoSrc: "/dion.svg" },
+  null,
+  { name: "RGIPT", logoSrc: "/rgipt.png", size: "featured" },
   null,
   null,
 
   // Row 3
-  { name: "Sponsor 10", logoSrc: "/sponsors/logo-10.svg" },
   null,
+  { name: "Almetyevsk State Technological University", logoSrc: "/almetyevs.svg" },
   null,
-  { name: "Sponsor 11", logoSrc: "/sponsors/logo-11.svg" },
+  { name: "Moscow Polytechnic University", logoSrc: "/mospolytech.svg" },
   null,
-  null,
+  { name: "Peter the Great St. Petersburg Polytechnic University", logoSrc: "/peter-the-great.png" },
   null,
 
   // Row 4
   null,
-  { name: "Sponsor 12", logoSrc: "/sponsors/logo-12.svg" },
   null,
   null,
+  { name: "Gazprom", logoSrc: "/Gazprom.png" },
   null,
   null,
   null,
 ];
 
 export default function SponsorsGrid() {
+  const mobileSponsors: SponsorItem[] = [
+    { name: "Hackathon", logoSrc: "/hackathon.png", size: "featured" },
+    { name: "BRICS Forum", logoSrc: "/brics.webp", size: "featured" },
+    { name: "GoBRICS", logoSrc: "/gobrics.png", size: "featured" },
+    { name: "RGIPT", logoSrc: "/rgipt.png", size: "featured" },
+    { name: "Dion", logoSrc: "/dion.svg" },
+    { name: "Almetyevsk State Technological University", logoSrc: "/almetyevs.svg" },
+    { name: "Moscow Polytechnic University", logoSrc: "/mospolytech.svg" },
+    { name: "Peter the Great St. Petersburg Polytechnic University", logoSrc: "/peter-the-great.png" },
+    { name: "Gazprom", logoSrc: "/Gazprom.png" },
+  ];
+
   return (
     <div className="w-full max-w-[1400px] mx-auto">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+      {/* Mobile/tablet: compact grid (no empty gaps) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 lg:hidden">
+        {mobileSponsors.map((sponsor) => (
+          <SponsorTileMobile key={sponsor.name} sponsor={sponsor} />
+        ))}
+      </div>
+
+      {/* Desktop: keep the original patterned grid with intentional gaps */}
+      <div className="hidden lg:grid grid-cols-7">
         {sponsors.map((sponsor, i) => (
           <SponsorTile key={i} sponsor={sponsor} index={i} />
         ))}
@@ -100,23 +121,59 @@ function SponsorTile({
               whileHover={{ y: -4, scale: 1.1 }}
               transition={{ type: "spring", stiffness: 260, damping: 18 }}
             >
-              <Image
-                src={sponsor.logoSrc}
-                alt={sponsor.name}
-                width={140}
-                height={64}
+              <div
                 className={
-                  "h-8 sm:h-12 w-auto select-none object-contain " +
-                  (sponsor.invert ? " invert" : "")
+                  "relative " +
+                  (sponsor.size === "featured"
+                    ? "h-14 w-[190px] sm:h-18 sm:w-[240px]"
+                    : "h-12 w-[140px] sm:h-14 sm:w-[170px]")
                 }
-                priority={false}
-              />
+              >
+                <Image
+                  src={sponsor.logoSrc}
+                  alt={sponsor.name}
+                  fill
+                  sizes="(min-width: 1024px) 240px, 190px"
+                  className={
+                    "select-none object-contain " +
+                    (sponsor.invert ? " invert" : "")
+                  }
+                  priority={false}
+                />
+              </div>
             </motion.div>
           </TiltCard>
         </div>
       ) : (
         <div className="h-full w-full rounded-[inherit]" />
       )}
+    </div>
+  );
+}
+
+function SponsorTileMobile({ sponsor }: { sponsor: SponsorItem }) {
+  return (
+    <div className="relative h-24 sm:h-28 w-full rounded-xl border border-dotted border-white/25 bg-white/[0.02]">
+      <div className="flex h-full w-full items-center justify-center p-4">
+        <div
+          className={
+            "relative w-full " +
+            (sponsor.size === "featured" ? "h-12" : "h-10")
+          }
+        >
+          <Image
+            src={sponsor.logoSrc}
+            alt={sponsor.name}
+            fill
+            sizes="(min-width: 640px) 220px, 160px"
+            className={
+              "select-none object-contain " +
+              (sponsor.invert ? " invert" : "")
+            }
+            priority={false}
+          />
+        </div>
+      </div>
     </div>
   );
 }
