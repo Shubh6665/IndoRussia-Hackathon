@@ -103,8 +103,8 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-20 flex flex-col items-center mix-blend-overlay">
-        <h1 className="text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
+      <div className="relative z-20 flex flex-col items-center mix-blend-overlay opacity-500">
+        <h1 className="text-[18vw] md:text-[12vw] leading-[0.85] font-serif font-bold text-white tracking-tighter text-center uppercase">
           <div className="overflow-hidden">
             <span ref={textRef1} className="block bg-gradient-to-r from-orange-200 to-white bg-clip-text text-transparent">
               Energy
@@ -119,7 +119,7 @@ export default function Hero() {
       </div>
 
       {/* Desktop: Russian Partner Universities - Horizontal Bar below title */}
-      <div className="hidden md:block relative z-20 mt-8 w-full max-w-4xl mx-auto px-6">
+      <div className="hidden md:block relative z-40 mt-8 w-full max-w-4xl mx-auto px-6">
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md px-6 py-4">
           <div className="flex items-center justify-center gap-6 lg:gap-10">
             {russianUniversities.map((u) => (
