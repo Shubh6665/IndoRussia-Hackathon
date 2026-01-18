@@ -135,13 +135,13 @@ export default function Hero() {
       </div>
 
       {/* Desktop: Russian Partner Universities - Horizontal Bar below title */}
-      <div className="hidden md:block relative z-40 mt-8 w-full max-w-4xl mx-auto px-6">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md px-6 py-4">
-          <div className="flex items-center justify-center gap-6 lg:gap-10">
+      <div className="hidden md:block relative z-40 mt-8 w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-6 md:px-8 lg:px-24">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md px-4 py-3 lg:px-6 lg:py-4">
+          <div className="flex items-center justify-center gap-3 md:gap-4 lg:gap-6 xl:gap-8">
             {russianUniversities.map((u) => (
-              <div key={u.name} className="flex items-center justify-center" aria-label={u.name}>
-                <span className="relative h-8 w-28 lg:h-10 lg:w-36">
-                  <Image src={u.src} alt={u.name} fill sizes="144px" className="object-contain" />
+              <div key={u.name} className="flex items-center justify-center shrink-0" aria-label={u.name}>
+                <span className="relative h-6 w-20 md:h-7 md:w-24 lg:h-8 lg:w-28 xl:h-10 xl:w-32">
+                  <Image src={u.src} alt={u.name} fill sizes="(min-width: 1280px) 128px, (min-width: 1024px) 112px, (min-width: 768px) 96px, 80px" className="object-contain" />
                 </span>
               </div>
             ))}
