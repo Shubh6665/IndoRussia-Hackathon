@@ -24,9 +24,9 @@ const ROWS = 4;
 // Then Russian partner universities
 const sponsors: SponsorCell[] = [
   // Row 1
-  null,
   { name: "BRICS Forum", logoSrc: "/brics.webp", size: "featured" },
   null,
+  { name: "BRICS India", logoSrc: "/bricsindia.svg" },
   { name: "Hackathon", logoSrc: "/hackathon.png", size: "featured" },
   null,
   { name: "GoBRICS", logoSrc: "/gobrics.png", size: "featured" },
@@ -34,16 +34,16 @@ const sponsors: SponsorCell[] = [
 
   // Row 2
   null,
-  null,
   { name: "Dion", logoSrc: "/dion.svg" },
+  null,
   null,
   { name: "RGIPT", logoSrc: "/rgipt.png", size: "featured" },
   null,
-  null,
+  { name: "Dew Journal", logoSrc: "/dewjournal.png", size: "featured" },
 
   // Row 3
   null,
-  { name: "Almetyevsk State Technological University", logoSrc: "/almetyevs.svg" },
+  { name: "TIDA", logoSrc: "/tida.svg",size: "featured" },
   null,
   { name: "Moscow Polytechnic University", logoSrc: "/mospolytech.svg" },
   null,
@@ -51,25 +51,30 @@ const sponsors: SponsorCell[] = [
   null,
 
   // Row 4
-  null,
-  null,
+  { name: "Almetyevsk State Technological University", logoSrc: "/almetyevs.svg" },
   null,
   { name: "Gazprom", logoSrc: "/Gazprom.png" },
   null,
+  { name: "Sber", logoSrc: "/sber.svg" },
   null,
-  null,
+  { name: "T1", logoSrc: "/T1.png" },
 ];
 
 export default function SponsorsGrid() {
   const mobileSponsors: SponsorItem[] = [
     { name: "Hackathon", logoSrc: "/hackathon.png", size: "featured" },
     { name: "BRICS Forum", logoSrc: "/brics.webp", size: "featured" },
+    { name: "BRICS India", logoSrc: "/bricsindia.svg" },
     { name: "GoBRICS", logoSrc: "/gobrics.png", size: "featured" },
     { name: "RGIPT", logoSrc: "/rgipt.png", size: "featured" },
     { name: "Dion", logoSrc: "/dion.svg" },
+    { name: "Dew Journal", logoSrc: "/dewjournal.png" },
     { name: "Almetyevsk State Technological University", logoSrc: "/almetyevs.svg" },
+    { name: "TIDA", logoSrc: "/tida.svg" },
     { name: "Moscow Polytechnic University", logoSrc: "/mospolytech.svg" },
+    { name: "Sber", logoSrc: "/sber.svg" },
     { name: "Peter the Great St. Petersburg Polytechnic University", logoSrc: "/peter-the-great.png" },
+    { name: "T1", logoSrc: "/T1.png" },
     { name: "Gazprom", logoSrc: "/Gazprom.png" },
   ];
 

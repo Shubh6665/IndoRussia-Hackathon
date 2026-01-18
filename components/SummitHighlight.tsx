@@ -66,11 +66,6 @@ export default function SummitHighlight() {
 
               {/* Text Overlay Content (Strictly Code 1) */}
               <div className="absolute bottom-3 left-7 right-7 md:bottom-10 md:left-10 md:right-auto md:max-w-2xl">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 backdrop-blur-md">
-                  <span className="text-[10px] uppercase tracking-wider text-white md:text-xs">
-                    Kazan • October 2024
-                  </span>
-                </div>
                 <h3 className="text-2xl font-serif text-white md:text-4xl">
                   XVI BRICS Summit
                 </h3>

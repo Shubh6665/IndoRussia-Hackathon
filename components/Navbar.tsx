@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
@@ -108,10 +109,28 @@ export default function Navbar() {
       />
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 w-full px-8 py-6 grid grid-cols-3 items-center z-[10001] mix-blend-difference text-white"
+        className="fixed top-0 left-0 w-full px-8 py-6 flex items-center justify-between md:grid md:grid-cols-3 md:items-center z-[10001] mix-blend-difference text-white"
       >
-        {/* Left: Hamburger (Mobile) */}
-        <div className="flex items-center">
+        {/* Left: BRICS India (Desktop) + Hamburger (Mobile) */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="https://www.brics2026.gov.in/brics-india-2026/"
+            aria-label="BRICS India"
+            className="hidden md:flex items-center"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="relative h-10 w-36">
+              <Image
+                src="/bricsindia.svg"
+                alt="BRICS India"
+                fill
+                sizes="144px"
+                className="object-contain"
+                priority={false}
+              />
+            </span>
+          </Link>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden flex flex-col gap-1.5 w-6 h-6 items-center justify-center"
@@ -159,14 +178,35 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Right: Register Button (Desktop) */}
-        <Link
-          href="/register"
-          onClick={handleRegisterClick}
-          className="hidden md:inline-block justify-self-end shrink-0 border border-white/20 px-5 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 whitespace-nowrap"
-        >
-          Register
-        </Link>
+        {/* Right: BRICS India (Mobile) + Register Button (Desktop) */}
+        <div className="flex items-center gap-3 md:justify-self-end">
+          <Link
+            href="https://www.brics2026.gov.in/brics-india-2026/"
+            aria-label="BRICS India"
+            className="md:hidden inline-flex items-center"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="relative h-9 w-32">
+              <Image
+                src="/bricsindia.svg"
+                alt="BRICS India"
+                fill
+                sizes="128px"
+                className="object-contain"
+                priority={false}
+              />
+            </span>
+          </Link>
+
+          <Link
+            href="/register"
+            onClick={handleRegisterClick}
+            className="hidden md:inline-block shrink-0 border border-white/20 px-5 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-300 whitespace-nowrap"
+          >
+            Register
+          </Link>
+        </div>
       </nav>
 
       {/* Mobile Menu */}
